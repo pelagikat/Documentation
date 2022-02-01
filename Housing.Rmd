@@ -1,23 +1,520 @@
 ---
-title: "Housing"
+title: "Housing component documentation"
 author: "Katrina Szetey"
-date: "20/05/2021"
+date: "31/01/2022"
+bibliography: Housing.bib
 output: html_document
 ---
 
 # Housing overview
 
+There are multiple intertwined issues to do with housing in Forrest. Supply cannot meet demand; tourism is reducing the available residential housing stock; development is hamstrung by existing waste management requirements. The supply issue is driving up house prices, and residents on lower incomes are being driven out because of cost.
+
 
 ## *Problem definition*
 
+1. Colac Otway Shire have designated that Forrest remain a low growth community and estimated a release of 3.5 permits per year for residential land development. There has only been one permit issued per year since 2011, so development has been below expected levels. There is scope for greater development in the future.
+
+*Dynamic hypothesis:*
+Building permits are not being granted by Council because potential developments cannot meet septic tank regulations. New wastewater infrastructure is required before any significant development may occur.
+
+2. Cost and availability of housing is an issue. Tourism businesses purchase properties for accommodation, removing them from the pool of available residential housing. This in turn drives up prices due to scarcity of supply. Other potential new residents also struggle to find housing, and anecdotally must wait until existing residents move away or travel.
+
+*Dynamic hypothesis:*
+Lack of housing development due to wastewater issues is constraining the housing and tourism accommodation supply.
+
+3. Median house prices have increased 188% since 2009, while median rents have increased by 30%. This puts a number of residents into mortgage or rent stress.
+
+*Dynamic hypothesis:*
+House prices are artificially high in much of Victoria (property market bubble), and the housing supply issue additionally inflates prices. Social housing (hypothetical) may relieve rent stress.
 
 
-## *System conceptualisation*
+## *System conceptualisation and formulation*
+
+There are two uses for housing in Forrest; residential and tourism. The central housing stock structure is built with Housing Supply, which has construction and demolition as flows. The Housing Supply stock drains into Tourism Housing and Residential Housing stocks. Housing demand is influenced by total population and Number of Tourists. Separate from this structure is the Social Housing Supply structure, which is a scenario variable and not active in the BAU scenario as there is currently no social housing in Forrest. 
+
+Leading off the Residential Housing stock is the housing stress structures, split into mortgage stress and rent stress, defined as when housing costs (rent or mortgage payments) exceed 30% of household income. The income and housing costs were split into three levels; low, medium and high.
+
+### Conceptual model
+```{r, echo = FALSE, warning = FALSE}
+library(DiagrammeR)
+
+mermaid("
+graph TB
+
+G(Wastewater infrastructure)-->A[Housing construction]
+A[Housing construction]-->B{Housing supply}
+I(Tourists)-->C{Tourism housing}
+B{Housing supply}-->C{Tourism housing}
+C{Tourism housing}-->D{Residential housing}
+B{Housing supply}-->D{Residential housing}
+H(Population)-->D{Residential housing}
+D{Residential housing}-->E(Housing stress)
+E(Housing stress)-->F{Social housing}
+
+        ")
+```
 
 
+## Data sources
 
-## *Model formulation*
+Data is available at [https://github.com/pelagikat/Local-SDGs-systems-model](https://github.com/pelagikat/Local-SDGs-systems-model)
 
+Data was obtained from [https://www.abs.gov.au/websitedbs/censushome.nsf/home/tablebuilder](ABS Table Builder) for housing tenure, [Victorian Land Use Information System (VLUIS)](http://vro.agriculture.vic.gov.au/dpi/vro/vrosite.nsf/pages/vluis) for numbers of properties, and [Aus Property Report](https://www.aupropertyreport.com/suburb-report/forrest-3236-vic/) for house sale and rental prices.
 
+***
 
 ## *Equations*
+
+### "30 percent"  
+
+Type: Constant  
+Formula: 0.3  
+Units: fraction  
+Assumptions: Housing stress is defined as housing costs that exceed 30% of household income.  
+    
+### Annual Mortgage Cost By Income Group[low income]  
+
+Type: Stock  
+Formula: INTEG (Mortgage rate change[low income]), INITIAL = 16176  
+Units: dollars  
+Assumptions: Initial value 2017 loan repayment value annualised (see data in Github)  
+
+### Annual Mortgage Cost By Income Group[mid income]  
+
+Type: Stock  
+Formula: INTEG (Mortgage rate change[mid income]), INITIAL = 18876)  
+Units: dollars  
+Assumptions: Initial value 2017 loan repayment value annualised (see data in Github)  
+
+### Annual Mortgage Cost By Income Group[high income]  
+
+Type: Stock  
+Formula: INTEG (Mortgage rate change[high income]), INITIAL = 48288  
+Units: dollars  
+Assumptions: Initial value 2017 loan repayment value annualised (see data in Github)  
+
+### Annual Rent Cost By Income Group[low income]  
+
+Type: Stock  
+Formula: INTEG (Rent rate change[low income]), INITIAL = 11964  
+Units: dollars  
+Assumptions: Initial value 2017 rent payment value annualised (see data in Github)  
+
+### Annual Rent Cost By Income Group[mid income]  
+
+Type: Stock  
+Formula: INTEG (Rent rate change[mid income]), INITIAL = 13524  
+Units: dollars  
+Assumptions: Initial value 2017 rent payment value annualised (see data in Github)  
+
+### Annual Rent Cost By Income Group[high income]  
+
+Type: Stock  
+Formula: = INTEG (Rent rate change[high income]), INITIAL = 13776  
+Units: dollar  
+Assumptions: Initial value 2017 rent payment value annualised (see data in Github)  
+
+### average house price  
+
+Type: Auxiliary  
+Formula: effect of supply demand ratio on house prices * reference average house price   
+Units: dollars  
+Assumptions:  
+
+### average size of household  
+
+Type: Constant  
+Formula: 2   
+Units: people/structure  
+Assumptions: From ABS census data (consistent for 2011 and 2016)  
+
+### consumer price index  
+
+Type: Constant  
+Formula: 1.009  
+Units: Dmnl  
+Assumptions: CPI is the standard Australian inflationary measure. CPI rose 0.9% in 2020, data from [Australian Bureau of Statistics.](https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/latest-release#data-download)  
+
+### Current time  
+
+Type: Constant  
+Formula: 2021  
+Units: Year  
+Assumptions: This variable is present to induce a delay to the model run year (2021).  
+
+### effect of supply demand ratio on house prices  
+
+Type: Auxiliary  
+Formula: table for effect of supply demand ratio on house prices ( housing supply demand ratio )  
+Units: Dmnl  
+Assumptions: Idea derived from @ozbas_modeling_2014  
+
+### fraction of mortgaged houses  
+
+Type: Constant  
+Formula: 0.19  
+Units: fraction  
+Assumptions: From ABS Census data (see data in Github)  
+
+## fraction of rented houses  
+
+Type: Constant  
+Formula: 0.09  
+Units: fraction  
+Assumptions: From ABS Census data (see data in Github)  
+
+### housing build delay  
+
+Type: Constant  
+Formula: 2  
+Units: Year  
+Assumptions: it takes 2 years from approval to build completion  
+
+### Housing construction  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE ( Wastewater availability > 0 :AND: Housing Land > housing land occupied, housing discrepancy delay, 0)  
+Units: structure/Year  
+Assumptions: New construction will not occur until wastewater infrastructure has been built. Additionally, the amount of housing land must be greater than the amount of land occupied already by houses.  
+
+### housing demand  
+
+Type: Auxiliary  
+Formula: (number of desired residential households + number of desired tourist houses)  
+Units: structure   
+Assumptions:  
+
+### Housing demolition  
+
+Type: Auxiliary  
+Formula: housing demolition rate * Housing Supply  
+Units: structure/Year  
+Assumptions:  
+
+### housing demolition rate  
+
+Type: Constant  
+Formula: 0  
+Units: fraction/Year  
+Assumptions: For a BAU scenario, no houses are being constructed or demolished.  
+
+### housing discrepancy  
+
+Type: Auxiliary  
+Formula: MIN(housing demand-(Residential Housing+Tourism Housing), 140)  
+Units: structure  
+Assumptions: The formula assumes the number of houses will not go below the number recorded in the 2016 census (140)  
+
+### housing discrepancy delay  
+
+Type: Auxiliary  
+Formula: DELAY3(housing discrepancy/housing transfer delay, housing build delay + Current time )  
+Units: structure/Year  
+Assumptions: This variable introduces a delay between the housing discrepancy occurring and the construction occurring in response.  
+
+### housing land occupied  
+
+Type: Auxiliary  
+Formula: minimum average land per house * (Residential Housing + Tourism Housing)  
+Units: hectares  
+Assumptions: Housing will not achieve a density less than *minimum average land per house*  
+
+### Housing Supply  
+
+Type: Stock  
+Formula: INTEG (Housing construction - Housing demolition - Residential housing allocation rate - Tourism housing allocation rate), INITIAL = 100)  
+Units: structure  
+Assumptions: Initial value from 2006 census data  
+
+### housing supply demand ratio  
+
+Type: Auxiliary  
+Formula: (Residential Housing + Tourism Housing) / housing demand  
+Units: Dmnl  
+Assumptions:  
+
+### housing transfer delay  
+
+Type: Constant  
+Formula: 2  
+Units: Year  
+Assumptions: This variable is the delay time for transfer between *Housing Supply* and one of the other housing stock variables.  
+
+### INIT annual mortgage cost[low income]  
+
+Type: Constant  
+Formula: 29588  
+Units: dollars  
+Assumptions: Using data from 2020 house prices and ATO industry benchmark interest (see data in Github)  
+    
+### INIT annual mortgage cost[mid income]  
+
+Type: Constant  
+Formula: 49972  
+Units: dollars  
+Assumptions: Using data from 2020 house prices and ATO industry benchmark interest (see data in Github)  
+        
+### INIT annual mortgage cost[high income]  
+
+Type: Constant  
+Formula: 57252  
+Units: dollars  
+Assumptions: Using data from 2020 house prices and ATO industry benchmark interest (see data in Github)  
+
+### INIT annual rent cost[low income]  
+
+Type: Constant  
+Formula: 13520  
+Units: dollars  
+Assumptions: Using data from 2020 rent prices (see data in Github)  
+
+### INIT annual rent cost[mid income]  
+
+Type: Constant  
+Formula: 18720  
+Units: dollars  
+Assumptions: Using data from 2020 rent prices (see data in Github)   
+
+### INIT annual rent cost[high income]  
+
+Type: Constant  
+Formula: 23400  
+Units: dollars  
+Assumptions: Using data from 2020 rent prices (see data in Github)  
+
+### land per house LDRZ  
+
+Type: Constant  
+Formula: 0.82  
+Units: hectares/structure  
+Assumptions: Low Density Residential Zone with a lot size of a minimum of 0.4ha in areas with no reticulated sewerage [link](https://www.planning.vic.gov.au/__data/assets/pdf_file/0026/97172/PPN37-Rural-Residential-Development_June-2015.pdf). Mean value of LDRZ mean lot size is 0.82 hectares   
+
+### land per house RLZ  
+
+Type: Constant  
+Formula: 7.3  
+Units: hectares/structure  
+Assumptions: Rural Living Zone specifies a lot size of at least 2 hectares and provides opportunities for some rural uses to occur [link](https://www.planning.vic.gov.au/__data/assets/pdf_file/0026/97172/PPN37-Rural-Residential-Development_June-2015.pdf). Mean value of RLZ mean lot size is 7.3 hectares  
+
+### minimum average land per house  
+
+Type: Constant  
+Formula: 1.2  
+Units: ha  
+Assumptions: Rural Living Zone has minimum 2ha and Low Density Residential Zone has minimum 0.4ha; 1.2ha is the average min of the two.  
+
+### Mortgage rate change[low income]  
+
+Type: Auxiliary   
+Formula: consumer price index * INIT annual mortgage cost[low income] / Time  
+Units: dollar/Year  
+Assumptions: mortgage repayments will increase each year in line with CPI  
+
+### Mortgage rate change[mid income]  
+
+Type: Auxiliary  
+Formula: consumer price index * INIT annual mortgage cost[mid income] / Time  
+Units: dollar/Year  
+Assumptions: mortgage repayments will increase each year in line with CPI  
+
+### Mortgage rate change[high income]  
+
+Type: Auxiliary  
+Formula: consumer price index * INIT annual mortgage cost[high income] / Time  
+Units: dollar/Year  
+Assumptions: mortgage repayments will increase each year in line with CPI  
+    
+### mortgage stress
+
+Type: Auxiliary  
+Formula: IF THEN ELSE( Annual Mortgage Cost By Income Group > "30 percent" * income values, number of mortgaged households by income cohort, 0)  
+Units: structure  
+Assumptions: This variable is split (subscripted) across 15 income cohorts (negative, nil, $1-$149, $150-$299, $300-$399, $400-$499, $500-$649, $650-$799, $800-$999, $1,000-$1,249, $1,250-$1,499, $1,250-$1,499, $1,750-$1,999, $2,000-$2,999, $3,000 or more)  
+
+### number of desired residential households  
+
+Type: Auxiliary  
+Formula: total population / average size of household  
+Units: structure  
+Assumptions:  
+
+### number of desired tourist houses
+
+Type: Auxiliary  
+Formula: Number Of Tourists / (average size of household * number of times each tourist house occupied per year)  
+Units: structure  
+Assumptions: Assuming that tourist occupancy is even across the year  
+
+### number of households under mortgage stress
+
+Type: Auxiliary  
+Formula: sum(mortgage stress[Income!])  
+Units: structure  
+Assumptions: This variable sums up all of the households experiencing mortgage stress from the 15 income cohorts      
+
+### number of households under rent stress  
+
+Type: Auxiliary  
+Formula: sum(rent stress[Income!])  
+Units: structure  
+Assumptions: This variable sums up all of the households experiencing mortgage stress from the 15 income cohorts      
+
+### number of mortgaged households 
+
+Type: Auxiliary  
+Formula: fraction of mortgaged houses * Residential Housing  
+Units: structure  
+Assumptions: the fraction of mortgaged houses remains constant  
+
+### number of mortgaged households by income cohort
+
+Type: Auxiliary  
+Formula: INTEGER ( number of mortgaged households * income distribution by income cohort)  
+Units: structure  
+Assumptions: This variable is split (subscripted) across 15 income cohorts (negative, nil, $1-$149, $150-$299, $300-$399, $400-$499, $500-$649, $650-$799, $800-$999, $1,000-$1,249, $1,250-$1,499, $1,250-$1,499, $1,750-$1,999, $2,000-$2,999, $3,000 or more)  
+    
+### number of rented households  
+
+Type: Auxiliary  
+Formula: (fraction of rented houses * Residential Housing) - Social Housing Supply  
+Units: structure  
+Assumptions: the fraction of rented houses remains constant; assume that social housing will withdraw households from the rental market  
+
+### number of rented households by income cohort
+
+Type: Auxiliary  
+Formula: number of rented households * income distribution by income cohort  
+Units: structure  
+Assumptions: This variable is split (subscripted) across 15 income cohorts (negative, nil, $1-$149, $150-$299, $300-$399, $400-$499, $500-$649, $650-$799, $800-$999, $1,000-$1,249, $1,250-$1,499, $1,250-$1,499, $1,750-$1,999, $2,000-$2,999, $3,000 or more)   
+    
+### number of times each tourist house occupied per year  
+
+Type: Constant  
+Formula: 52  
+Units: 1/Year  
+Assumptions: Assume each tourist house is occupied all weekends of the year  
+
+### reference average house price  
+
+Type: Constant  
+Formula: 685000  
+Units: dollar  
+Assumptions: data from https://www.aupropertyreport.com/suburb-report/forrest-3236-vic/ (see data in Github)  
+
+### Rent rate change[low income]  
+
+Type: Auxiliary  
+Formula: consumer price index * INIT annual rent cost[low income] / Time  
+Units: dollar/Year  
+Assumptions: rent will increase each year in line with CPI  
+
+### Rent rate change[mid income]  
+
+Type: Auxiliary  
+Formula:=consumer price index * INIT annual rent cost[mid income] / Time  
+Units: dollar/Year  
+Assumptions: rent will increase each year in line with CPI  
+        
+### Rent rate change[high income]  
+
+Type: Auxiliary  
+Formula: consumer price index * INIT annual rent cost[high income] / Time  
+Units: dollar/Year  
+Assumptions: rent will increase each year in line with CPI  
+    
+### rent stress  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE ( Annual Rent Cost By Income Group > "30 percent" * income values, number of rented households by income cohort, 0)  
+Units: structure  
+Assumptions: This variable is split (subscripted) across 15 income cohorts (negative, nil, $1-$149, $150-$299, $300-$399, $400-$499, $500-$649, $650-$799, $800-$999, $1,000-$1,249, $1,250-$1,499, $1,250-$1,499, $1,750-$1,999, $2,000-$2,999, $3,000 or more)  
+
+### Residential Housing
+
+Type: Stock  
+Formula: INTEG (Residential housing allocation rate), INITIAL = 67  
+Units: structure  
+Assumptions: Initial value from 2006 census data  
+
+### Residential housing allocation rate  
+
+Type: Auxiliary  
+Formula: MIN( ( total population / average size of household ) / housing transfer delay, Housing Supply / housing transfer delay)  
+Units: structure/Year  
+Assumptions: This is the rate variable which transfers the housing supply stock to the residential housing stock
+
+### social housing build delay  
+
+Type: Constant  
+Formula: 2   
+Units: Year  
+Assumptions: it takes two years to build a new social house  
+
+### Social housing construction  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE ( Wastewater availability > 0, social housing discrepancy * social housing scenario switch
+/social housing build delay, 0)  
+Units: structure/Year  
+Assumptions: this is a scenario variable that is switched off depending on the social housing scenario switch variable  
+
+### social housing demand  
+
+Type: Auxiliary  
+Formula: number of households under rent stress + (sum of people below poverty line / average size of household )  
+Units: structure  
+Assumptions:  
+
+### social housing discrepancy  
+
+Type: Auxiliary  
+Formula: social housing demand - Social Housing Supply  
+Units: structure  
+Assumptions:  
+
+### social housing scenario switch  
+
+Type: Auxiliary  
+Formula: 0  
+Units: Dmnl  
+Assumptions: variable which switches social housing on or off  
+
+### Social Housing Supply  
+
+Type: Stock  
+Formula: INTEG (Social housing construction), INITIAL = 0  
+Units: structure  
+Assumptions: no social housing in Forrest at start  
+
+### "social housing supply/demand ratio"
+
+Type: Auxiliary   
+Formula: Social Housing Supply/social housing demand  
+Units: Dmnl  
+Assumptions:  
+
+### table for effect of supply demand ratio on house prices
+
+Type: Lookup  
+Formula: ([(0,0.8)-(2,1.4)],(0,1.34),(0.25,1.31),(0.5,1.27),(0.75,1.17),(1,1),(1.25,0.94),(1.5,0.89),(1.75,0.87),(2,0.85))  
+Units: Dmnl  
+Assumptions: data from @ozbas_modeling_2014  
+
+### Tourism Housing  
+
+Type: Stock  
+Formula: INTEG (Tourism housing allocation rate), INITIAL = 33)  
+Units: structure  
+Assumptions: Difference between initial values for Housing Supply and Residential Housing  
+
+### Tourism housing allocation rate  
+
+Type: Auxiliary   
+Formula: MIN (( Number Of Tourists / (average size of household * number of times each tourist house occupied per year )) / housing transfer delay, Housing Supply / housing transfer delay)  
+Units: structure/Year  
+Assumptions:  
+
+
+
+# References 

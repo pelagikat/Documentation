@@ -1,5 +1,5 @@
 ---
-title: "Inequality"
+title: "Inequality component documentation"
 author: "Katrina Szetey"
 date: "20/05/2021"
 output: html_document
@@ -9,15 +9,270 @@ output: html_document
 
 
 ## *Problem definition*
+In the greater Otway region, 19% of people live in poverty and the median family income in Forrest is 55% lower than for the rest of Victoria (2016). Twenty percent of all families in Forrest are single-parent families (and all single parents are women). The SEIFA score (a measure of socio-economic conditions) puts Forrest in the 30% most disadvantaged areas in the country, and the 20% most disadvantaged in Victoria.
 
+*Dynamic hypothesis:*
+Intergenerational inequality is only one factor. Other contributing factors are income inequality, employment, the social gradient of health, housing stress, travel inequality, and internet access.
 
 
 ## *System conceptualisation*
+
+
+### Conceptual model
+```{r, echo = FALSE, warning = FALSE}
+library(DiagrammeR)
+
+
+mermaid("
+graph LR
+A(Intergenerational inequality)-->D(Inequality indicator)  
+B(Internet access)-->D(Inequality indicator) 
+C(Unemployment)-->D(Inequality indicator)
+E(Poverty)-->D(Inequality indicator)
+F(Disability)-->D(Inequality indicator)
+G(Housing stress)-->D(Inequality indicator)
+H(Travel inequality)-->D(Inequality indicator)
+        ")
+
+```
+
 
 
 
 ## *Model formulation*
 
 
+*** 
 
 ## *Equations*
+
+"0-14"= INTEG (
+         Births 
+                          + "In-out migration 0-14" 
+                          - "Ageing 0-14" 
+                          - "Deaths 0-14",
+             
+                45)
+    Units: people
+    
+bus frequency=
+    52
+Units: trip/Year
+
+bus frequency required for travel equity=
+    travel equity bus demand/bus capacity
+Units: trip/Year
+
+disability fraction=
+    0.177
+Units: Dmnl
+https://www.abs.gov.au/statistics/health/disability/disability-ag
+        eing-and-carers-australia-summary-findings/2018 Percentage of 
+        population who have a disability
+
+households with internet access fraction=
+    0.77
+Units: fraction
+From ABS data: 77% of households accessed the internet from 
+        their home
+
+households without internet access fraction=
+    1-households with internet access fraction
+Units: Dmnl
+
+income distribution by income cohort[Negative]=
+    sum(income distribution fractions by income cohort and gender[Negative,Gender
+!])
+income distribution by income cohort[Nil]=
+        sum(income distribution fractions by income cohort and gender[Nil,Gender!
+    ])
+income distribution by income cohort["$1-$149"]=
+        sum(income distribution fractions by income cohort and gender["$1-$149",Gender
+    !])
+income distribution by income cohort["$150-$299"]=
+        sum(income distribution fractions by income cohort and gender["$150-$299"
+    ,Gender!])
+income distribution by income cohort["$300-$399"]=
+        sum(income distribution fractions by income cohort and gender["$300-$399"
+    ,Gender!])
+income distribution by income cohort["$400-$499"]=
+        sum(income distribution fractions by income cohort and gender["$400-$499"
+    ,Gender!])
+income distribution by income cohort["$500-$649"]=
+        sum(income distribution fractions by income cohort and gender["$500-$649"
+    ,Gender!])
+income distribution by income cohort["$650-$799"]=
+        sum(income distribution fractions by income cohort and gender["$650-$799"
+    ,Gender!])
+income distribution by income cohort["$800-$999"]=
+        sum(income distribution fractions by income cohort and gender["$800-$999"
+    ,Gender!])
+income distribution by income cohort["$1,000-$1,249"]=
+        sum(income distribution fractions by income cohort and gender["$1,000-$1,249"
+    ,Gender!])
+income distribution by income cohort["$1,250-$1,499"]=
+        sum(income distribution fractions by income cohort and gender["$1,250-$1,499"
+    ,Gender!])
+income distribution by income cohort["$1,500-$1,749"]=
+        sum(income distribution fractions by income cohort and gender["$1,500-$1,749"
+    ,Gender!])
+income distribution by income cohort["$1,750-$1,999"]=
+        sum(income distribution fractions by income cohort and gender["$1,750-$1,999"
+    ,Gender!])
+income distribution by income cohort["$2,000-$2,999"]=
+        sum(income distribution fractions by income cohort and gender["$2,000-$2,999"
+    ,Gender!])
+income distribution by income cohort["$3,000 or more"]=
+        sum(income distribution fractions by income cohort and gender["$3,000 or more"
+    ,Gender!])
+    Units: Dmnl
+    
+income distribution fractions by income cohort and gender[Negative,Gender]=
+    0.006, 0.0022
+income distribution fractions by income cohort and gender[Nil,Gender]=
+        0.0105, 0.009
+income distribution fractions by income cohort and gender["$1-$149",Gender]
+    =
+        0.0224, 0.0269
+income distribution fractions by income cohort and gender["$150-$299",Gender
+    ]=
+        0.0284, 0.0396
+income distribution fractions by income cohort and gender["$300-$399",Gender
+    ]=
+        0.0366, 0.0403
+income distribution fractions by income cohort and gender["$400-$499",Gender
+    ]=
+        0.0448, 0.0612
+income distribution fractions by income cohort and gender["$500-$649",Gender
+    ]=
+        0.0523, 0.0717
+income distribution fractions by income cohort and gender["$650-$799",Gender
+    ]=
+        0.0605, 0.0695
+income distribution fractions by income cohort and gender["$800-$999",Gender
+    ]=
+        0.0859, 0.0471
+income distribution fractions by income cohort and gender["$1,000-$1,249",Gender
+    ]=
+        0.0799, 0.0381
+income distribution fractions by income cohort and gender["$1,250-$1,499",Gender
+    ]=
+        0.0276, 0.0224
+income distribution fractions by income cohort and gender["$1,500-$1,749",Gender
+    ]=
+        0.0246, 0.0261
+income distribution fractions by income cohort and gender["$1,750-$1,999",Gender
+    ]=
+        0.0202, 0.003
+income distribution fractions by income cohort and gender["$2,000-$2,999",Gender
+    ]=
+        0.0194, 0.0105
+income distribution fractions by income cohort and gender["$3,000 or more",
+    Gender]=
+        0.0112, 0.0075
+    Units: Dmnl
+    Weekly income
+
+inequality indicator=
+    (disability fraction+households without internet access fraction+normalised intergenerational inequality youth at risk
++
+    normalised poverty line+normalised travel inequality+normalised unemployed
++normalised housing stress)/7
+Units: Dmnl
+Arithmetic mean
+
+intergenerational risk factor=
+    1.8
+Units: structure/people
+Cobb-Clark et al 2017 estimate it is 1.8 times more likely for 
+        children of parents receivng long-term welfare to receive 
+        welfare themselves http://ftp.iza.org/dp11070.pdf
+
+labour force[Male]=
+    residents in paid work[Male] 
+                 + unemployed residents[Male]
+labour force[Female]=
+        residents in paid work[Female]+unemployed residents[Female]
+    Units: people
+    
+normalised housing stress=
+    (number of households under mortgage stress + number of households under rent stress
+)/Residential Housing
+Units: Dmnl
+
+normalised intergenerational inequality youth at risk=
+    number of young people at risk for intergenerational inequality/"0-14"
+Units: Dmnl
+
+normalised poverty line=
+    sum of people below poverty line/total population
+Units: Dmnl
+
+normalised travel inequality=
+    1-(bus frequency/bus frequency required for travel equity)
+Units: Dmnl
+
+normalised unemployed=
+    (number of unemployed people/total population)*normalised unemployed unit conversion
+Units: Dmnl
+
+normalised unemployed unit conversion=
+    1
+Units: Year*people/job
+
+number labour force in income bracket[Income,Gender]=
+    INTEGER(income distribution fractions by income cohort and gender[Income,Gender
+]*labour force[Gender])
+Units: people
+
+number of households under mortgage stress=
+    sum(mortgage stress[Income!])
+Units: structure
+
+number of households under rent stress=
+    sum(rent stress[Income!])
+Units: structure
+
+number of unemployed people=
+    "unemployment (agriculture)" + "unemployment (other)" + "unemployment (tourism)"
+Units: job/Year
+
+number of young people at risk for intergenerational inequality=
+    intergenerational risk factor*"0-14"*(sum of people below poverty line/Residential Housing
+)
+Units: people
+
+number people below poverty line[poverty line ss,Gender]=
+    number labour force in income bracket[poverty line ss,Gender]
+Units: people
+Poverty line is below first quartile ($0-399). This is in line 
+        with the ACOSS figure of $457
+
+Residential Housing= INTEG (
+    Residential housing allocation rate,
+        67)
+Units: structure
+
+sum of people below poverty line=
+    sum(number people below poverty line[poverty line ss!,Gender!])
+Units: people
+
+total population=
+    "0-14" + "15-64" + "65+"
+Units: people
+
+"unemployment (agriculture)"=
+    IF THEN ELSE("labour demand (agriculture)"<labour input ag, labour input ag
+-"labour demand (agriculture)", 0)
+Units: job/Year
+
+"unemployment (other)"=
+    IF THEN ELSE("labour demand (other)"<labour input other, labour input other
+-"labour demand (other)", 0)
+Units: job/Year
+
+"unemployment (tourism)"=
+    IF THEN ELSE("labour demand (tourism)"<labour input tourism, labour input tourism
+-"labour demand (tourism)", 0)
+Units: job/Year
+

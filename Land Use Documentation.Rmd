@@ -1,127 +1,387 @@
 ---
-title: "Land Use Documentation"
+title: "Land use component documentation"
 author: "Katrina Szetey"
-date: "11/02/2021"
+date: "31/01/2022"
+bibliography: LUrefs.bib
 output: html_document
 ---
 
 # Land Use Overview
 
-There are three major types of land use in Forrest: Agriculture (incorporating crop farming and livestock farming), Housing, and Bush/Forest. There is protected National Park land which will not leave the Bush/Forest stock. As an initial condition, we assume that agricultural land which is >40 hectares in size is classified as Farming Zone, and is thus protected from land use change (although the Forrest community would like this zoning modified so that Farming Zone land within the township could have more than one residence built on it). Housing land is primarily within the township. [This link](https://www.planning.vic.gov.au/__data/assets/pdf_file/0027/97182/PPN42-Applying-the-Rural-Zones_June-2015.pdf) discusses the different rural planning zones.
+There are four major types of land use in Forrest: Agriculture (incorporating crop farming and livestock farming), Housing, Forest, and Protected (national park). As an initial condition, we assume that agricultural land which is >40 hectares in size is classified as Farming Zone, and is thus protected from land use change (although the Forrest community would like this zoning modified so that Farming Zone land within the township could have more than one residence built on it). Housing land is primarily within the township. [This link](https://www.planning.vic.gov.au/__data/assets/pdf_file/0027/97182/PPN42-Applying-the-Rural-Zones_June-2015.pdf) discusses the different rural planning zones.
 
 ## *Problem definition*
+1. Agricultural land fertility is a driver of agricultural business profits. In general, the world needs to use less additional fertilisers to improve the health of ecosystems. Forrest is a hub for regenerative agriculture – where the land is improved as a result of agriculture, rather than stripped of nutrients as in traditional farming.
 
+*Dynamic hypothesis:*
+Regenerative agriculture limits the use of fertilisers, which reduces agricultural runoff into waterways, improving local water quality and the environment generally. It also boosts agricultural profits.
 
+2. There is not currently a great deal of land use change in Forrest. Agricultural businesses and housing demand are the greatest pressures on land use.
+
+*Dynamic hypothesis:*
+Residents have suggested petitioning Council to change the laws restricting multiple buildings on agricultural land (the ‘40ha’ rule), which may increase land transfer between ag and housing, and an increase in agricultural business may increase land transfer between bush and agriculture.
 
 
 ## *System conceptualisation*
+
+The stock of land in Forrest is fixed (approx 12,000 hectares). We assume four land use types - Agriculture, Forest, Housing and Protected. Protected land can only be increased from Forest land, and once it is there it remains there. Housing can be increased from Agriculture or Farming but once land is Housing land, it remains there. Agriculture and Forest land can cycle between the two.
+
+Housing land has pressures from housing demand. Agriculture land has pressure from agricultural businesses. 
+
+Fertilisation intensity and consumption does not affect the rest of the model.  
+
+### Conceptual model
+```{r, echo = FALSE, warning = FALSE}
+library(DiagrammeR)
+
+mermaid("
+graph LR
+
+E(Agriculture businesses)-->A{Agriculture land}
+F(Housing demand)-->C{Housing land}
+A{Agriculture land}-->C{Housing land}
+H{Fertilisation intensity}-->G(Fertiliser consumption)
+A{Agriculture land}-->G(Fertiliser consumption)
+A{Agriculture land}-->B{Forest land}
+B{Forest land}-->C{Housing land}
+B{Forest land}-->A{Agriculture land}
+B{Forest land}-->D{Protected land}
+
+        ")
+
+
+```
 
 
 
 ## *Model formulation*
 
+The land use component was inspired by the FeliX model @rydzak_felix3_2013. There are four stocks, one for each of the land use types, and a small structure to model fertiliser consumption. Another small structure is present to set maximum values for each land use stock. Each transfer rate between land stocks is affected by two variables: a 'change' variable (FeliX characterises this as a value which measures the 'need' for change between land use types, so we represent this as a pressure for change); and an 'allocation time' variable, which represents the amount of time it takes to change from one land use to another.  
 
+## Data sources
+
+Data and code are available at [https://github.com/pelagikat/Local-SDGs-systems-model](https://github.com/pelagikat/Local-SDGs-systems-model)
+
+Land use data was obtained from the [Victorian Land Use Information System (VLUIS)](http://vro.agriculture.vic.gov.au/dpi/vro/vrosite.nsf/pages/vluis). This is a series of seven spatial datasets with land use classes which we clipped to the extent of the Forrest township. The land use classes were categorised into the model variables as follows:
+
+Housing:  
+Detached Home  
+Residential Rural / Rural Lifestyle (0.4 to 20 Ha)  
+Vacant Residential Home Site / Surveyed Lot  
+Vacant Residential Rural / Rural Lifestyle (0.4 to 20ha)  
+
+Forest:  
+Creek Reserve (Fresh Water)  
+Forest Reserves - Public  
+Reserved Land  
+Softwood Plantation  
+Nature Reserve Area 
+Water Supply  
+Unclassified Private Land  
+Native Hardwood (standing timber)  
+
+Agriculture:  
+Mixed farming and grazing  (generally more than 20ha)  
+Livestock Production (Dairy Cattle)  
+Livestock Production (Beef Cattle)  
+Market Garden - Vegetables (generally less than 20ha plantings)  
+
+Protected:  
+National Park - Land  
+Conservation Area - Public  
+
+
+***
 
 ## *Equations*
 
+### Agricultural to Housing transfer rate  
 
-***
+Type: Rate  
+Formula: MAX(0, MIN (max land housing, agriculture to housing change * ( Agriculture Land - agriculture protected land ) / agriculture to housing land allocation time ))  
+Units: ha/Year  
+Assumptions: The amount of agriculture land will not drop below the value of the agriculture protected land variable  
+    
+    
+### Agriculture Land  
 
-## Stock variables
+Type: Stock  
+Formula: INTEG (Forest to Agriculture transfer rate - Agricultural to Housing transfer rate -
+Agriculture to Forest transfer rate), INITIAL = INIT agricultural land  
+Units: hectare  
+Assumptions:  
 
-### Agricultural Land
+### agriculture protected land  
 
-Formula: INTEG (  "Bush-Agriculture transfer rate" 
-                  - "Agricultural-Housing transfer rate")  
-INIT: INIT Agricultural land  
+Type: Constant  
+Formula: 1533.8  
+Units: hectare  
+Assumptions: LU 2008 data: all farming and livestock land use >40ha as equivalent to Farming Zone [(see here)](https://www.planning.vic.gov.au/__data/assets/pdf_file/0027/97182/PPN42-Applying-the-Rural-Zones_June-2015.pdf)  
+
+### agriculture to forest change  
+
+Type: Auxiliary  
+Formula: ("number of businesses (agriculture)" * average land per agricultural business) / Agriculture Land   
+Units: Dmnl  
+Assumptions:  
+
+### agriculture to forest land allocation time  
+
+Type: Constant  
+Formula: 2.5  
+Units: Year  
+Assumptions: Calibrated against data  
+
+### Agriculture to Forest transfer rate  
+
+Type: Rate  
+Formula: MAX(0, MIN ( max land forest, agriculture to forest change * ( Agriculture Land - agriculture protected land) / agriculture to forest land allocation time ))  
+Units: ha/Year  
+Assumptions:  
+
+### agriculture to housing change  
+
+Type: Auxiliary  
+Formula: (average land per house * housing demand) / Housing Land  
+Units: Dmnl  
+Assumptions:  
+
+### agriculture to housing land allocation time  
+
+Type: Constant  
+Formula: 500  
+Units: Year  
+Assumptions: Calibrated against data  
+
+### average land per agricultural business  
+
+Type: Constant  
+Formula: 17.3  
+Units: hectare/structure  
+Assumptions: Value derived from Land Use spatial dataset  
+
+### average land per house  
+
+Type: Auxiliary  
+Formula: (land per house LDRZ + land per house RLZ) / 2  
+Units: hectares/structure  
+Assumptions: Mean value of Low Density Residential Zone and Rural Living Zone  
+
+### deforestation  
+
+Type: Auxiliary  
+Formula: (INIT forest land - Forest Land)  
 Units: hectares  
-Assumptions: Total agricultural land  
+Assumptions: Changes in forest land area from the area in year 2008 (earliest data available).  
 
-### Bush/Forest Land
+### Fertilisation Intensity  
 
-Formula: INTEG ( "Bush-Agriculture transfer rate" 
-                  - "Bush-Housing transfer rate")  
-INIT: "INIT Bush/Forest land"  
-Units: hectares  
-Assumptions: Total Bush/Forest land. We are including forestry plantation in this stock.  
-
-### Housing Land
-
-Formula: INTEG (  "Agricultural-Housing transfer rate" 
-                  + "Bush-Housing transfer rate")  
-INIT: INIT Housing Land  
-Units: hectares  
-Assumptions: Total Housing land  
-
-### Forest Protected Land
-
-Formula: INTEG (  Forest Protected Land Change )  
-INIT: INIT Forest Protected Land  
-Units: hectares  
-Assumptions: National Park area will remain protected over time  
-
-### Fertilisation Intensity
-
-Formula: INTEG ( Fertilisation Intensity Change )  
-INIT: INIT Fertilisation Intensity  
+Type: Stock  
+Formula: INTEG ( Fertilisation intensity change rate), INITIAL = INIT Fertilisation Intensity  
 Units: TonNutrient/(ha*Year)  
-Assumptions: Intensity of fertilisation practices per ha per year. Unchanged from FeliX.  
+Assumptions: Intensity of fertilisation practices per ha per year.  
 
-***
+### fertilisation intensity change  
 
-## Rate variables
+Type: Constant  
+Formula: -0.1  
+Units: Dmnl  
+Assumptions: Calibrated against data  
 
-### Bush-Agriculture transfer rate
+### Fertilisation intensity change rate  
 
-Formula: MAX ( 0, 
-             Bush Agriculture change 
-                  * ( "Bush/Forest Land" 
-                       - Forest Protected Land ) 
-                  / ( Bush to Agriculture land allocation time ) )
-             + MIN ( 0, 
-                  Bush Agriculture change 
-                       * ( Agricultural Land 
-                            - Agriculture Protected Land ) 
-                       / Agriculture to Bush land allocation time )  
+Type: Stock  
+Formula: Fertilisation Intensity * fertilisation intensity change / time to adjust fertilisation intensity  
+Units: TonNutrient/(Year * Year * ha)  
+Assumptions:  
+
+### fertiliser consumption  
+
+Type: Auxiliary  
+Formula: ( Fertilisation Intensity * Agriculture Land )  
+Units: TonNutrient/Year  
+Assumptions:  
+
+### Forest Land  
+
+Type: Stock  
+Formula: INTEG (Agriculture to Forest transfer rate + Forest to Agriculture transfer rate - Forest to Housing transfer rate - Forest to Protected transfer rate), INITIAL = INIT forest land  
+Units: hectare  
+Assumptions:  
+ 
+### forest to agriculture change  
+
+Type: Constant  
+Formula: 0.4  
+Units: Dmnl  
+Assumptions: Calibrated against data  
+
+### forest to agriculture land allocation time  
+
+Type: Constant  
+Formula: 19  
+Units: Year  
+Assumptions: Calibrated against data  
+
+### Forest to Agriculture transfer rate  
+
+Type: Auxiliary  
+Formula: MAX ( 0, MIN ( max land ag, forest to agriculture change * ( Forest Land ) / ( forest to agriculture land allocation time ) ))  
 Units: ha/Year  
-Assumptions: Currently assuming negligible change between these stocks, but may not be accurate  
+Assumptions:  
 
-### Agriculture-Housing transfer rate
+### forest to housing change  
 
-Formula: MAX ( 0, 
-             "Agriculture-Housing change" 
-                  * ( Agricultural Land 
-                       - Agriculture Protected Land ) 
-                  / Agriculture to Housing land allocation time )    
+Type: Auxiliary  
+Formula: (average land per house * housing demand ) / Housing Land  
+Units: Dmnl  
+Assumptions:  
+
+### forest to housing land allocation time  
+
+Type: Constant  
+Formula: 500  
+Units: Year  
+Assumptions: Calibrated against data  
+
+### Forest to Housing transfer rate  
+
+Type: Auxiliary  
+Formula: MAX(0, MIN ( max land, forest to housing change * ( Forest Land ) / forest to housing land allocation time ))  
 Units: ha/Year  
-Assumptions: This will likely be the most influential in Forrest. The 40-ha rule variable will affect this.  
+Assumptions:  
 
-### Bush-Housing transfer rate
+### forest to protected allocation time  
 
-Formula: MAX ( 0, 
-             "Bush-Housing change" 
-                  * ( "Bush/Forest Land" 
-                       - Forest Protected Land ) 
-                  / Bush to Housing land allocation time )  
-Units: ha/Year
-Assumptions: Currently assuming negligible change between these stocks, but may not be accurate  
+Type: Constant  
+Formula: 542  
+Units: Year  
+Assumptions: Calibrated against data  
 
-### Forest Protected Land Change
+### forest to protected change  
 
-Formula: DELAY3 ( Forest Protected Land 
-                  * Current to Max Forest Protected Land , 
-             Time to Adjust Forest Protected Land )  
-Units: ha/Year  
-Assumptions: Unmodified from FeliX  
+Type: Constant  
+Formula: 25  
+Units: Dmnl  
+Assumptions: Calibrated against data 
 
-### Fertilsation Intensity Change
+### Forest to Protected transfer rate  
 
-Formula: Fertilisation Intensity 
-             * Current to Max Fertilisation Intensity 
-             / Time to Adjust Fertilisation Intensity  
-Units: TonNutrient/(Year*Year*ha)  
-Assumptions: Unmodified from FeliX  
+Type: Auxiliary  
+Formula: MAX(0, MIN ( max land protected, forest to protected change * ( Forest Land / forest to protected allocation time )))  
+Units: hectare/Year  
+Assumptions:  
 
-*** 
+### Housing Land  
 
-## Auxiliary variables
+Type: Stock  
+Formula: INTEG( Agricultural to Housing transfer rate + Forest to Housing transfer rate), INITIAL = INIT housing land   
+Units: hectare  
+Assumptions:  
+
+### INIT agricultural land  
+
+Type: Constant  
+Formula: 3549.5  
+Units: hectare  
+Assumptions: Land area in year 2006 (earliest data available).   
+
+#### INIT Fertilisation Intensity  
+
+Type: Constant  
+Formula: 0.254  
+Units: TonNutrient/(ha*Year)  
+Assumptions: In 2008, farming in Cogangamite used 0.254 tons/ha/year  
+
+### INIT forest land  
+
+Type: Constant  
+Formula: 4436  
+Units: hectare  
+Assumptions: Land area in year 2008 (earliest data available).  
+
+### INIT housing land  
+
+Type: Constant  
+Formula: 57.3  
+Units: hectare  
+Assumptions: Land area in year 2008 (earliest data available).  
+
+### INIT protected land  
+
+Type: Constant  
+Formula: 1283.7  
+Units: hectare  
+Assumptions: Land area in year 2006 (earliest data available).  
+
+###  land per house LDRZ  
+
+Type: Constant  
+Formula: 0.82  
+Units: hectares/structure  
+Assumptions: Low Density Residential Zone with a lot size of a minimum of 0.4 ha in areas with no reticulated sewerage. [See here](https://www.planning.vic.gov.au/__data/assets/pdf_file/0026/97172/PPN37-Rural-Residential-Development_June-2015.pdf). Mean value of LDRZ lot size is 0.82 hectares  
+
+### land per house RLZ  
+
+Type: Constant  
+Formula: 7.3  
+Units: hectares/structure  
+Assumptions: Rural Living Zone specifies a lot size of at least 2 hectares and provides opportunities for some rural uses to occur. [See here](https://www.planning.vic.gov.au/__data/assets/pdf_file/0026/97172/PPN37-Rural-Residential-Development_June-2015.pdf). Mean value of RLZ lot size is 7.3 hectares 
+
+### max land
+    
+Type: Constant  
+Formula: 12041  
+Units: hectares/Year  
+Assumptions: Limiting factor for land stock expansion  
+
+### max land ag
+
+Type: Auxiliary  
+Formula: max land-Forest Land-Housing Land-Protected Land  
+Units: hectares  
+Assumptions:  
+
+### max land forest  
+
+Type: Auxiliary  
+Formula: max land-Agriculture Land-Housing Land-Protected Land  
+Units: hectares  
+Assumptions:  
+
+### max land housing  
+
+Type: Auxiliary  
+Formula: max land-Agriculture Land-Forest Land-Protected Land  
+Units: hectares  
+Assumptions:  
+
+### max land protected
+
+Type: Auxiliary  
+Formula: max land-Agriculture Land-Forest Land-Housing Land  
+Units: hectares   
+Assumptions:  
+
+### Protected Land
+
+Type: Stock  
+Formula: INTEG (Forest to Protected transfer rate), INITIAL = INIT protected land  
+Units: hectare  
+Assumptions:  
+
+### time to adjust fertilisation intensity  
+
+Type: Constant  
+Formula: 4  
+Units: Year  
+Assumptions: Calibrated against data  
+
+### total land
+
+Type: Auxiliary  
+Formula: Agriculture Land + Forest Land + Housing Land + Protected Land  
+Units: hectares  
+Assumptions: Mean total land area 2008-2017 = 12427 hectares  
+
+# References 

@@ -1,7 +1,8 @@
 ---
-title: "Economy"
+title: "Economy component documentation"
 author: "Katrina Szetey"
-date: "20/05/2021"
+date: "31/01/2022"
+bibliography: Econrefs.bib
 output: html_document
 ---
 
@@ -10,13 +11,575 @@ output: html_document
 
 ## *Problem definition*
 
+1. The development of the Mountain Bike Trail system began the transition to a primarily tourism-based economy. This transition was enhanced with private investment in local small businesses catering to both tourists and local residents. The expansion of the tourism industry is hampered by limited housing supply for both accommodation and employees, and by ageing and failing infrastructure.
 
-## *System conceptualisation*
+*Dynamic hypothesis:*
+There is a tension between tourism, housing and the economy, especially while new housing development is stymied. Residents resent tourism for its impact on housing and housing prices, while also benefitting from its positive economic impact. New wastewater, enabling housing development, would ease this tension.
+
+2. Agriculture is still a major part of Forrest and District. There are local dairy and beef farms, mushroom growers. Community members have noted the future viability of these as an uncertainty.
+
+*Dynamic hypothesis:*
+Climate change will have a diminishing effect on agricultural profit in the long term. Land fertility may be able to combat this effect, especially through the impact of regenerative agriculture.
+
+3. The local community are happy to have tourism in Forrest, except where there is conflict with housing availability, but have expressed a desire for diversification of the economy so there are other options for employment growth within the town
+
+*Dynamic hypothesis:*
+Local small businesses are dominated by tourism/ hospitality and farming. Other sectors (e.g. accountants, hairdressers, tradespeople etc) are constrained by a lack of housing and office space, and poor internet.
+
+## *System conceptualisation and model formulation*
+
+The economy component is separated into three economic sub-sectors: agriculture, tourism and other. 'Other' encompasses all other economic activity in Forrest that is not agriculture or tourism. Each sub-sector is modelled by an identical structure which represents the Cobb-Douglas production function (@angulo_dynamics_2015):
+$$
+Y = AL^β K^c
+$$
+where Y = total production (value of goods produced) each year, A = productivity factor, L = labour input, K = capital input, and α and β are output elasticities of capital and labour, respectively.
+
+Additionally, a multiplier structure was added to each sub-sector which measured the effect of sub-sector specific impacts, e.g., climate change on agriculture, internet service on 'other'.
+
+### Conceptual model
+```{r, echo = FALSE, warning = FALSE}
+library(DiagrammeR)
+
+mermaid("
+graph LR
+
+A(Productivity multipliers)-->B{Productivity Y}
+C(Productivity factor A)-->B{Productivity Y}
+D(Labour input L)-->B{Productivity Y}
+E(Capital input K)-->B{Productivity Y}
+F(Elasticities α, β)-->B{Productivity Y}
+
+        ")
+```
 
 
+## Data sources
 
-## *Model formulation*
+Data are available at [https://github.com/pelagikat/Local-SDGs-systems-model](https://github.com/pelagikat/Local-SDGs-systems-model)
+
+Data was obtained from Australian Bureau of Statistics
+[Counts of Australian Businesses](https://www.abs.gov.au/statistics/economy/business-indicators/counts-australian-businesses-including-entries-and-exits/latest-release)
+ and [Census Table Builder](https://www.abs.gov.au/websitedbs/censushome.nsf/home/tablebuilder)
+
+For purposes of modelling, when data refers to bin sizes (e.g., income ranges), the median value is used to represent the whole bin (e.g., for an income range of $0 - $50,000, the value of $25,000 is used for all members of that data bin).
 
 
+*** 
 
 ## *Equations*
+
+### agriculture productivity multiplier  
+
+Type: Auxiliary    
+Formula: regenerative agriculture multiplier * net climate change impact on economy  
+Units: Dmnl  
+Assumptions: 
+
+### "average jobs per business (agriculture)"  
+
+Type: Constant      
+Formula: 1.45  
+Units: jobs/structure/Year  
+Assumptions: Data from ABS (see data in Github) 
+
+### "average jobs per business (other)"  
+
+Type: Constant       
+Formula: 3.66    
+Units: job/structure/Year  
+Assumptions: Data from ABS (see data in Github) 
+
+### "average jobs per business (tourism)"  
+   
+Type: Constant  
+Formula: 3.71  
+Units: job/structure/Year  
+Assumptions: Data from ABS (see data in Github) 
+
+### "business income distribution (agriculture)"  
+
+Type: Constant  
+Formula: 0-$50k = 0.3  
+$50k-$100k = 0.1  
+$100k-$200k = 0.1  
+$200k-$500k = 0.3  
+$500k-$2m = 0.1  
+$2m-$5m = 0    
+Units: structure*Year/dollars   
+Assumptions: This variable is split (subscripted) across 6 income cohorts. See data in Github.  
+    
+### "business income distribution (other)  
+
+Type: Constant  
+Formula: 0-$50k = 0.4  
+$50k-$100k = 0.2  
+$100k-$200k = 0.2  
+$200k-$500k = 0.2  
+$500k-$2m = 0.1  
+$2m-$5m = 0   
+Units: structure*Year/dollars  
+Assumptions: This variable is split (subscripted) across 6 income cohorts. See data in Github.  
+    
+### "business income distribution (tourism)  
+
+Type: Constant  
+Formula: 0-$50k = 0.1  
+$50k-$100k = 0.1  
+$100k-$200k = 0.1  
+$200k-$500k = 0.3  
+$500k-$2m = 0.3  
+$2m-$5m = 0.1   
+Units: structure*Year/dollars  
+Assumptions: This variable is split (subscripted) across 6 income cohorts. See data in Github.  
+    
+### capital input ag  
+
+Type: Constant  
+Formula: 2767.84  
+Units: dollars/Year  
+Assumptions: This value was calibrated against data. See data in Github.  
+
+### capital input other  
+   
+Type: Constant  
+Formula: 138131  
+Units: dollars/Year  
+Assumptions: This value was calibrated against data. See data in Github. 
+
+### capital input tourism  
+    
+Type: Constant  
+Formula: 928124  
+Units: dollars/Year  
+Assumptions: This value was calibrated against data. See data in Github.  
+
+### effect of internet on other sector business
+
+Type: Auxiliary  
+Formula: internet service performance / (maximum speed per connection / Fixed Wireless Towers)  
+Units: Dmnl  
+Assumptions: That poor internet performance has a negative impact on other sector businesses (which are principally home-based businesses in professional industries)  
+
+### effect of non-local school parents participating in Forrest's economy"  
+
+Type: Auxiliary  
+Formula: ((district kids' parents cohort / "15-64" ) + 1 ) * "non-local retail demand"  
+Units: Dmnl  
+Assumptions: A multiplier which quantifies the additional traffic in Forrest as a result of transporting children to school and the effect it may have on e.g., retail business.   
+
+### elasticity q1 ag  
+
+Type: Constant  
+Formula: 0.45  
+Units: Dmnl  
+Assumptions: calibrated against data. See data in Github.  
+
+### elasticity q1 other  
+
+Type: Constant  
+Formula: 0.2  
+Units: Dmnl  
+Assumptions: calibrated against data. See data in Github.  
+
+### elasticity q1 tourism  
+
+Type: Constant   
+Formula: 0.26  
+Units: Dmnl   
+Assumptions: calibrated against data. See data in Github.   
+
+### elasticity q2 ag  
+
+Type: Constant  
+Formula: 0.01  
+Units: Dmnl  
+Assumptions: calibrated against data. See data in Github.  
+
+### elasticity q2 other  
+    
+Type: Constant  
+Formula: 0.74  
+Units: Dmnl  
+Assumptions: calibrated against data. See data in Github. 
+
+### elasticity q2 tourism  
+
+Type: Constant  
+Formula: 0.73  
+Units: Dmnl  
+Assumptions: calibrated against data. See data in Github. 
+
+### fraction of land under regenerative agriculture  
+   
+Type: Constant     
+Formula: 0.05  
+Units: fraction  
+Assumptions: Actual value unknown; can be a scenario variable  
+
+### fraction of residents in paid work  
+
+Type: Constant     
+Formula: Male = 0.344  
+Female = 0.424  
+Units: fraction  
+Assumptions: Data from ABS, this variable is disaggregated by gender. ABS only collects data on male/female gender so is not truly representative of gender. See data in Github.  
+    
+### fraction of residents not in paid work  
+
+Type: Constant     
+Formula: Male = 0.072  
+Female = 0.08  
+Units: fraction  
+Assumptions: Data from ABS, this variable is disaggregated by gender. ABS only collects data on male/female gender so is not truly representative of gender.  See data in Github.  
+    
+### fraction of unemployed residents
+
+Type: Constant     
+Formula: Male = 0.024  
+Female = 0.056  
+Units: fraction  
+Assumptions: Data from ABS, this variable is disaggregated by gender. ABS only collects data on male/female gender so is not truly representative of gender.  See data in Github.  
+    
+### INIT ag productivity  
+
+Type: Constant  
+Formula: 1.875e+06  
+Units: dollars/Year  
+Assumptions: Data from ABS, see data in Github  
+
+### INIT other productivity  
+
+Type: Constant  
+Formula: 1.175e+06  
+Units: dollars/Year  
+Assumptions: Data from ABS, see data in Github  
+
+### INIT tourism productivity  
+
+Type: Constant  
+Formula: 25000  
+Units: dollars/Year  
+Assumptions: Data from ABS, see data in Github  
+
+### "job vacancies (agriculture) filled externally"   
+
+Type: Auxiliary  
+Formula: IF THEN ELSE("labour demand (agriculture)" > labour input ag, "labour demand (agriculture)" - labour input ag, 0)  
+Units: job/Year  
+Assumptions: This variable represents the number of jobs within Forrest that require non-local employees  
+
+### "job vacancies (other) filled externally"  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE("labour demand (other)" > labour input other, "labour demand (other)" - labour input other, 0)  
+Units: job/Year  
+Assumptions: This variable represents the number of jobs within Forrest that require non-local employees  
+
+### "job vacancies (tourism) filled externally"  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE("labour demand (tourism)" > labour input tourism, "labour demand (tourism)" - labour input tourism, 0)  
+Units: job/Year  
+Assumptions: This variable represents the number of jobs within Forrest that require non-local employees  
+
+### "labour demand (agriculture)"  
+
+Type: Auxiliary  
+Formula: "number of businesses (agriculture)" * "average jobs per business (agriculture)"  
+Units: job/Year  
+Assumptions:  
+
+### "labour demand (other)"  
+
+Type: Auxiliary  
+Formula: "average jobs per business (other)"*"number of businesses (other)"  
+Units: job/Year  
+Assumptions:  
+
+### "labour demand (tourism)"  
+
+Type: Auxiliary  
+Formula: "number of businesses (tourism)" * "average jobs per business (tourism)"  
+Units: job/Year  
+Assumptions:  
+
+### labour force
+
+Type: Auxiliary  
+Formula: Male = residents in paid work[Male] + unemployed residents[Male]  
+Female = residents in paid work[Female] + unemployed residents[Female]   
+Units: people  
+Assumptions: This variable is disaggregated by gender. ABS only collects data on male/female gender so is not truly representative of gender.  
+    
+### labour input ag  
+
+Type: Auxiliary  
+Formula: sum(labour force [Gender!]) * "reference jobs fraction (agriculture)"  
+Units: job/Year  
+Assumption: This variable re-aggregates the gender disaggregated variables  
+
+### labour input other  
+
+Type: Auxiliary  
+Formula: sum(labour force [Gender!]) * "reference jobs fraction (other)"  
+Units: job/Year  
+Assumption: This variable re-aggregates the gender disaggregated variables  
+
+### labour input tourism  
+
+Type: Auxiliary  
+Formula: sum(labour force [Gender!]) * "reference jobs fraction (tourism)"  
+Units: job/Year  
+Assumption: This variable re-aggregates the gender disaggregated variables  
+
+### "non-local retail demand"
+
+Type: Constant  
+Formula: 1.2  
+Units: Dmnl  
+Assumptions: Actual value unknown; can be a scenario variable  
+
+### "number of businesses (agriculture)"
+
+Type: Auxiliary  
+Formula: INTEGER( sum ("number of businesses in income bracket (agriculture)"[Business Income!]))  
+Units: structure  
+Assumptions: this variable sums the agriculture businesses in all income brackets to arrive at an integer value  
+
+### "number of businesses (other)"  
+
+Type: Auxiliary  
+Formula: INTEGER( sum ("number of businesses in income bracket (other)"[Business Income!]))  
+Units: structure  
+Assumptions: this variable sums the other businesses in all income brackets to arrive at an integer value  
+
+### "number of businesses (tourism)"  
+
+Type: Auxiliary  
+Formula: INTEGER( sum ("number of businesses in income bracket (tourism)"[Business Income!]))  
+Units: structure
+Assumptions: this variable sums the tourism businesses in all income brackets to arrive at an integer value  
+
+### "number of businesses in income bracket (agriculture)"  
+
+Type: Auxiliary  
+Formula: 0-$50k = ("business income distribution (agriculture)"["0-$50k"]*Total Agricultural Productivity) / 25000  
+$50k-$100k = ("business income distribution (agriculture)"["$50k-$100k"]*Total Agricultural Productivity) / 75000  
+$100k-$200k = ("business income distribution (agriculture)"["$100k-$200k"]*Total Agricultural Productivity) / 150000  
+$200k-$500k = ("business income distribution (agriculture)"["$200k-$500k"]*Total Agricultural Productivity) / 350000  
+$500k-$2m = ("business income distribution (agriculture)"["$500k-$2m"]*Total Agricultural Productivity) / 1.25e+06  
+$2m-$5m = ("business income distribution (agriculture)"["$2m-$5m"]*Total Agricultural Productivity) / 3.5e+06  
+Units: structure  
+Assumptions: This variable is split (subscripted) across 6 income cohorts. Median values used for each for income bracket divisor.   
+
+### "number of businesses in income bracket (other)"  
+
+Type: Auxiliary  
+Formula: 0-$50k = ("business income distribution (other)"["0-$50k"]*Total Agricultural Productivity) / 25000  
+$50k-$100k = ("business income distribution (other)"["$50k-$100k"]*Total Agricultural Productivity) / 75000  
+$100k-$200k = ("business income distribution (other)"["$100k-$200k"]*Total Agricultural Productivity) / 150000  
+$200k-$500k = ("business income distribution (other)"["$200k-$500k"]*Total Agricultural Productivity) / 350000  
+$500k-$2m = ("business income distribution (other)"["$500k-$2m"]*Total Agricultural Productivity) / 1.25e+06  
+$2m-$5m = ("business income distribution (other)"["$2m-$5m"]*Total Agricultural Productivity) / 3.5e+06   
+Units: structure  
+Assumptions: This variable is split (subscripted) across 6 income cohorts. Median values used for each for income bracket divisor.  
+
+### "number of businesses in income bracket (tourism)"  
+
+Type: Auxiliary  
+Formula: 0-$50k = ("business income distribution (tourism)"["0-$50k"]*Total Agricultural Productivity) / 25000  
+$50k-$100k = ("business income distribution (tourism)"["$50k-$100k"]*Total Agricultural Productivity) / 75000  
+$100k-$200k = ("business income distribution (tourism)"["$100k-$200k"]*Total Agricultural Productivity) / 150000  
+$200k-$500k = ("business income distribution (tourism)"["$200k-$500k"]*Total Agricultural Productivity) / 350000  
+$500k-$2m = ("business income distribution (tourism)"["$500k-$2m"]*Total Agricultural Productivity) / 1.25e+06  
+$2m-$5m = ("business income distribution (tourism)"["$2m-$5m"]*Total Agricultural Productivity) / 3.5e+06   
+Units: structure  
+Assumptions: This variable is split (subscripted) across 6 income cohorts. Median values used for each for income bracket divisor.  
+
+### other productivity multiplier  
+
+Type: Auxiliary  
+Formula: effect of internet on other sector business * "effect of non-local school parents participating in Forrest's economy"  
+Units: Dmnl  
+Assumptions:  
+
+### productivity factor ag  
+
+Type: Constant  
+Formula: 145.7  
+Units: 1/job  
+Assumptions: calibrated against data. See data in Github.
+
+### productivity factor other  
+
+Type: Constant  
+Formula: 700  
+Units: 1/job  
+Assumptions: calibrated against data. See data in Github.
+
+### productivity factor tourism  
+
+Type: Constant  
+Formula: 421.7  
+Units: 1/job  
+Assumptions: calibrated against data. See data in Github.
+
+### profitability increase from regenerative agriculture  
+
+Type: Auxiliary  
+Formula: RA coefficient*Time +RA intercept  
+Units: Dmnl  
+Assumptions: Linear model from NSW data - @ogilvy_graziers_2018  
+
+### RA coefficient  
+
+Type: Constant  
+Formula: -0.034  
+Units: Dmnl  
+Assumptions: Calculated from data. See Github for data and derivation of linear model.  
+
+### RA intercept  
+
+Type: Constant  
+Formula: 69.8  
+Units: Dmnl  
+Assumptions: Calculated from data. See Github for data and derivation of linear model.  
+
+### Rate of productivity change ag  
+
+Type: Auxiliary  
+Formula: agriculture productivity multiplier * productivity factor ag * (capital input ag ^ elasticity q1 ag) * (labour input ag ^ elasticity q2 ag)  
+Units: dollars/(Year*Year)  
+Assumptions: the Cobb-Douglas production function  
+
+### Rate of productivity change other  
+
+Type: Auxiliary  
+Formula: other productivity multiplier * productivity factor other * ( capital input other ^ elasticity q1 other) * (labour input other ^ elasticity q2 other)  
+Units: dollars/(Year*Year)  
+Assumptions: the Cobb-Douglas production function  
+
+### Rate of productivity change tourism  
+
+Type: Auxiliary  
+Formula: tourism productivity multiplier * productivity factor tourism * (capital input tourism ^ elasticity q1 tourism) * (labour input tourism ^ elasticity q2 tourism)  
+Units: dollars/(Year*Year)  
+Assumptions: the Cobb-Douglas production function  
+
+### "reference jobs fraction (agriculture)"  
+
+Type: Constant  
+Formula: 0.18  
+Units: job/people/Year  
+Assumptions: calibrated against data. See data in Github.  
+
+### "reference jobs fraction (other)"  
+
+Type: Constant  
+Formula: 0.22  
+Units: job/people/Year  
+Assumptions: calibrated against data. See data in Github.  
+
+### "reference jobs fraction (tourism)"  
+
+Type: Constant  
+Formula: 0.279638  
+Units: job/people/Year  
+Assumptions: calibrated against data. See data in Github.  
+
+### regenerative agriculture multiplier  
+
+Type: Auxiliary  
+Formula: 1 + (fraction of land under regenerative agriculture * profitability increase from regenerative agriculture)  
+Units: Dmnl  
+Assumptions: calibrated against data. See data in Github.  
+
+### residents in paid work
+
+Type: Auxiliary  
+Formula: Male = fraction of residents in paid work[Male] * "working-age population"  
+Female = fraction of residents in paid work[Female] * "working-age population"  
+Units: people
+Assumptions: Data from ABS, disaggregated by gender (only two categories), "Employed, worked x-time" categories. See data in Github.  
+
+### residents not in paid work
+
+Type: Auxiliary  
+Formula: Male = fraction of residents not in paid work[Male] * "working-age population"  
+Female = fraction of residents not in paid work[Female] * "working-age population"  
+Units: people
+Assumptions: Data from ABS, disaggregated by gender (only two categories), ABS "Away From Work" category. See data in Github.  
+
+### Total Agricultural Productivity
+
+Type: Stock  
+Formula: INTEG ( Rate of productivity change ag), INITIAL = INIT ag productivity  
+Units: dollars/Year  
+Assumptions:  
+
+### Total Other Productivity  
+
+Type: Stock  
+Formula: INTEG ( Rate of productivity change other), INITIAL = INIT other productivity  
+Units: dollars/Year  
+Assumptions:  
+
+### total productivity  
+
+Type: Auxiliary  
+Formula: Total Agricultural Productivity + Total Other Productivity + Total Tourism Productivity  
+Units: dollar/Year  
+Assumptions: Sum of all total productivity stocks  
+
+### Total Tourism Productivity
+
+Type: Stock  
+Formula: INTEG (Rate of productivity change tourism), INITAL = INIT tourism productivity)  
+Units: dollars/Year  
+Assumptions:  
+
+### tourism productivity multiplier
+
+Type: Auxiliary  
+Formula: Number Of Tourists / normal tourist numbers  
+Units: Dmnl  
+Assumptions:  
+
+### unemployed residents
+
+Type: Auxiliary  
+Formula: Male = fraction of unemployed residents[Male] * "working-age population"  
+Female = fraction of unemployed residents[Female] * "working-age population"  
+Units: people  
+Assumptions: Data from ABS, disaggregated by gender (only two categories), looking for x-time work" categories. See data in Github.  
+
+### "unemployment (agriculture)"  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE("labour demand (agriculture)" < labour input ag, labour input ag - "labour demand (agriculture)", 0)  
+Units: job/Year  
+Assumptions:  
+
+### "unemployment (other)"  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE("labour demand (other)" < labour input other, labour input other - "labour demand (other)", 0)  
+Units: job/Year  
+Assumptions:  
+
+### "unemployment (tourism)"  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE("labour demand (tourism)" < labour input tourism, labour input tourism - "labour demand (tourism)", 0)  
+Units: job/Year  
+Assumptions
+
+### "working-age population"  
+
+Type: Auxiliary   
+Formula: "15-64"  
+Units: people  
+Assumptions: this is a renaming of the "15-64" age cohort to make clear it is explicitly the population of Forrest who are of working age.  
+
+
+# References

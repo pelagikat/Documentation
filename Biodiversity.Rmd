@@ -1,7 +1,8 @@
 ---
-title: "Biodiversity"
+title: "Biodiversity component documentation"
 author: "Katrina Szetey"
-date: "20/05/2021"
+date: "31/01/2022"
+bibliography: biod.bib
 output: html_document
 ---
 
@@ -9,15 +10,135 @@ output: html_document
 
 
 ## *Problem definition*
+Forrest is located in a biodiversity hotspot, and the Great Otway National Park provides protection for some of that biodiversity. The local residents are proud of their pristine surroundings and dedicated to ensuring they remain so. Climate change and potential bushfire impact are both threats to the local environment, as well as any land use change which reduces the amount of bushland. Fertiliser runoff from agriculture is also a potential danger.
+
+*Dynamic hypothesis:*
+Climate change and land use change are the fundamental drivers for biodiversity risk. They both increases bushfire risk and land use change reduces habitat. Indigenous cultural burning may be a way to mitigate biodiversity loss (by healing Country) but has a significant lead-in/preparation time. 
 
 
 
-## *System conceptualisation*
+## *System conceptualisation and model formulation*
+
+```{r, echo = FALSE, warning = FALSE}
+library(DiagrammeR)
 
 
+mermaid("
+graph LR
+A(Cultural burning)-->D{Species richness}  
+B(Land use change)-->D{Species richness} 
+C(Invasive species)-->D{Species richness}
+E(Climate damage)-->D{Species richness}
+F(Fire impact)-->D{Species richness}
+        ")
 
-## *Model formulation*
+```
 
 
+Species richness is the critical variable in the biodiversity component. Species richness can be affected by cultural burning, land use change, invasive species and climate change. Land use change is modelled using a species area curve, 
+$$
+S = cA^z 
+$$
+
+where Z = 0.86 (derived from data), A = land area, c - constant, and S = number of species.
+
+Data are available at [https://github.com/pelagikat/Local-SDGs-systems-model](https://github.com/pelagikat/Local-SDGs-systems-model)
+Thanks to Carla Archibald for assisting with data for this model component.
+
+***
 
 ## *Equations*
+
+### baseline invasive species impact
+
+Type: Auxiliary  
+Formula: INIT species richness - (0.21*INIT species richness)  
+Units: species  
+Assumptions: 21% species richnesss decline compared to natural systems; @crystal-ornelas_cumulative_2020  
+
+### fire impact on biodiversity  
+
+Type: Auxiliary  
+Formula: 1 + (1 - (1/FFDI model))  
+Units: Dmnl  
+Assumptions:  
+
+### impact of climate damage on biodiversity  
+
+Type: Auxiliary  
+Formula: 1 + 0.00091  
+Units: Dmnl  
+Assumptions: Climate damage for Forrest area from LUTO model. Land suitable for biodiversity reduces by 10% between 1990 and 2100, therefore annualised reduction is 9.1e-4 %  
+
+### impact of cultural burning on biodiversity  
+
+Type: Auxiliary  
+Formula: 1+Cultural Burning  
+Units: Dmnl  
+Assumptions: In personal discussions with an Australian fire researcher, they suggested that cultural burning would have a positive impact on biodiversity compared with a fire suppression regime (business as usual). Some evidence provided by @bowman_human_2011, @trauernicht_local_2015.
+
+### INIT species richness  
+
+Type: Constant  
+Formula: 4637  
+Units: species  
+Assumptions: Baseline 1990 data for species richness in the Colac Otway LGA area. Includes amphibians, birds, mammals, plants and reptiles. See Github for spatial data. 
+
+### invasive species impact discrepancy  
+
+Type: Auxiliary  
+Formula: Species richness-baseline invasive species impact  
+Units: species  
+Assumptions:  
+
+### land for biodiversity impact  
+
+Type: Auxiliary  
+Formula: Forest Land + Protected Land  
+Units: hectares  
+Assumptions: Agricultural land has no biodiversity impact  
+
+### land use change impact on biodiversity  
+
+Type: Auxiliary  
+Formula: (species area curve coefficient * land for biodiversity impact ^ species area curve exponent) / simulation time  
+Units: species/Year  
+Assumptions: Species area curve S = cA^z , z = 0.86 (derived from data). Assume that species richness initial variable is 50% of total c = 2 Area = 8375 S = 4637  
+
+### species area curve coefficient  
+
+Type: Constant  
+Formula: 2  
+Units: species/hectares  
+Assumptions: as derived in *land use change impact on biodiversity*  
+
+### species area curve exponent  
+
+Type: Constant  
+Formula: 0.86  
+Units: Dmnl  
+Assumptions: derived from data  
+
+### Species richness  
+
+Type: Stock  
+Formula: INTEG (Species richness increase rate - Species richness decrease rate), INITIAL = INIT species richness)  
+Units: species  
+Assumptions:  
+
+### Species richness decrease rate=
+
+Type: Auxiliary  
+Formula: (impact of climate damage on biodiversity) * (invasive species impact discrepancy / simulation time) * fire impact on biodiversity  
+Units: species/Year  
+Assumptions:  
+
+### Species richness increase rate  
+
+Type: Auxiliary  
+Formula: impact of cultural burning on biodiversity * land use change impact on biodiversity  
+Units: species/Year  
+Assumptions:  
+
+
+# References

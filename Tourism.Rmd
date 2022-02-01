@@ -1,7 +1,7 @@
 ---
-title: "Tourism"
+title: "Tourism component documentation"
 author: "Katrina Szetey"
-date: "20/05/2021"
+date last updated: "31/01/2022"
 output: html_document
 ---
 
@@ -10,14 +10,152 @@ output: html_document
 
 ## *Problem definition*
 
+1. Forrest’s major tourism drawcards are its beautiful natural environment and the Mountain Bike Trails. It follows that these are also its vulnerabilities.
 
+*Dynamic hypothesis:*
+Tourist numbers are affected by the incidence of bushfire either locally or elsewhere in Victoria, by flooding,   and by the quality of local infrastructure (including the MTB trails and wastewater).
+
+2. Because tourism accommodation is primarily sourced from residential housing stock, neither residential housing nor dedicated tourism accommodation is able to be built because of the wastewater problem.
+ 
+*Dynamic hypothesis:*
+The current state of wastewater in Forrest impacts the development of housing and tourism accommodation, thus   impacting growth in tourist numbers.
+
+3. Forrest is virtually inaccessible unless you have a car, thus is excluded from tourists who do not drive.
+
+*Dynamic hypothesis:*
+The frequency of bus services in Forrest is inadequate for residents, let alone to support tourist movement. An   increase in bus frequency would enable growth in tourist numbers.
 
 ## *System conceptualisation*
+
+Tourism already exists as part of the Economy component, so here we are not modelling the finances of tourism, but instead we want to explore what effect external factors may have on tourist numbers.
+
+### Conceptual model
+```{r, echo = FALSE, warning = FALSE}
+library(DiagrammeR)
+
+mermaid("
+graph LR
+
+A(Climate impact)-->B{Number of tourists}
+C(Infrastructure improvements)-->B{Number of tourists}
+D(Bus services)-->B{Number of tourists}
+E(Accommodation)-->B{Number of tourists}
+
+        ")
+
+```
 
 
 
 ## *Model formulation*
 
+Here our stock variable is the Number of Tourists, with a flow of Rate of tourist increase. Affecting that flow rate are climate disasters, tourism accommodation, infrastructure improvement, and bus frequency.
 
+***
 
 ## *Equations*
+
+### effect of future improvements to infrastructure  
+
+Type: Constant  
+Formula: 1  
+Units: Dmnl  
+Assumptions: Scenario variable to model unknown changes  
+
+### effect of MTB Trails improvements  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE(MTB trails improvements availability > 0, 1.5, 1)  
+Units: Dmnl  
+Assumptions: Cost benefit analysis of mountain bike trail improvements: increase of 25,000 cycling tourists per annum from 24,000 (doubling). Assume that only half of these stay in Forrest.  
+
+### effect of wastewater  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE(Wastewater availability > 0, 2, 1)  
+Units: Dmnl  
+Assumptions: Assume a doubling of tourists from improved wastewater infrastructure  
+
+### impact of bus frequency on tourist numbers  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE(tourist bus frequency > 1, ( 1 + ((tourist bus frequency * tourist bus capacity) / Number Of Tourists)) , 1)  
+Units: Dmnl  
+Assumptions: modelling for tourist buses that do not currently exist.  
+
+### impact of climate on tourism  
+
+Type: Auxiliary  
+Formula: 1- (( 1 - bushfire risk fraction) + probability of catastrophic bushfire elsewhere in Victoria - annual probability of flood)  
+Units: Dmnl  
+Assumptions: local bushfire risk and flooding is a negative impact, bushfire elsewhere is a positive impact  
+
+### impact of tourism infrastructure improvements on tourist numbers  
+
+Type: Auxiliary  
+Formula: effect of MTB Trails improvements * effect of wastewater * effect of future improvements to infrastructure  
+Units: Dmnl  
+Assumptions: that infrastructure improvements will each have an independent effect on tourist numbers  
+
+### initial tourist increase  
+
+Type: Auxiliary  
+Formula: RAMP(100, 2000, 2006 )  
+Units: people/Year  
+Assumptions: tourism did not commence in Forrest in earnest until 2006, so this is a value to show a small increase in tourist numbers over the period 2000 - 2006.  
+
+### normal tourist numbers  
+
+Type: Constant   
+Formula: 3432  
+Units: people/Year  
+Assuming 33 houses in Forrest used for tourism (2006 census unoccupied dwellings), at an average of 3 night stays, this means Forrest's houses can support a max of 6000 tourists per year. Make an assumption that houses will only be occupied on weekends (for "normal" numbers), multiplied by two for two-people-per-house stays: 33 * 52 * 2 approx = 3232 people per year  
+
+### Number Of Tourists  
+
+Type: Stock  
+Formula: INTEG (Rate of tourist increase), INITIAL = 0)  
+Units: people/Year  
+Assumptions:  
+
+### probability of catastrophic bushfire elsewhere in Victoria
+
+Type: Constant  
+Formula: 0.1  
+Units: Dmnl  
+Assumptions: Assume 1 catastrophic bushfire every ten years elsewhere in Victoria (prior data: 1983, 1998, 2009, 2020)  
+
+### Rate of tourist increase  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE ( Time > 2006, tourist house discrepancy * average size of household * tourist numbers multiplier, initial tourist increase )  
+Units: people/Year  
+Assumptions: An if-then-else formula to represent the pre- and post-2006 states of tourism in Forrest  
+
+### tourist bus capacity 
+
+Type: Constant  
+Formula: 25  
+Units: people/bus  
+Assumptions: Assume same size bus as public transport  
+
+### tourist bus frequency  
+
+Type: Constant   
+Formula: 0  
+Units: bus/Year  
+Assumptions: Currently no buses run; this can be a scenario variable  
+
+### tourist house discrepancy  
+
+Type: Auxiliary  
+Formula: (Tourism Housing * number of times each tourist house occupied per year - (Number Of Tourists / average size of household ))  
+Units: structure/Year  
+Assumptions: a supply vs demand variable  
+
+### tourist numbers multiplier  
+    
+Type: Auxiliary  
+Formula: SMOOTH3 ( impact of tourism infrastructure improvements on tourist numbers * impact of climate on tourism * impact of bus frequency on tourist numbers , 10 )  
+Units: Dmnl  
+Assumptions: A smoothing function to show a gradual impact change over time from various impact inputs  
