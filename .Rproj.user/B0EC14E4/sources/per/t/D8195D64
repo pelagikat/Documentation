@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1624326360016.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "24206127",
+    "id" : "D8195D64",
+    "lastKnownWriteTime" : 1624341117,
+    "last_content_update" : 1624341117101,
+    "path" : "C:/Users/szeteyka/OneDrive - Deakin University/PhD/Data/Biodiversity/Species richness data/species_richness_forrest_19042021_CA.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "27,0",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 13,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

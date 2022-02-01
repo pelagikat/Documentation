@@ -1,0 +1,277 @@
+---
+title: "Transport component documentation"
+author: "Katrina Szetey"
+date: "20/05/2021"
+output: html_document
+---
+
+# Transport overview
+
+
+## *Problem definition*
+1. Forrest lies on the route between Apollo Bay and Colac. It is a feeder route to tourism along the Great Ocean Road and the Great Otway National Park. Recent upgrades to the channel routes to Forrest make it easier for tourists to visit the area, and safer for residents to drive.
+
+*Dynamic hypothesis:*
+Forrest is midway between Colac and Apollo Bay, and the road between them is a key route to the tourism of the Great Ocean Road. It is important that these roads remain in excellent condition for safety of road users. Road deaths on rural roads far exceed those in metropolitan areas.
+
+2. There is one bus line that runs through Forrest, the Colac-Marengo route. This service runs only on Wednesdays and only once in each direction. There is a V-Line station in Birregurra, but apart from the once-weekly bus, there is no connecting service from Birregurra to Forrest, and there is no alignment of the bus timetable with the train timetable. This puts a severe limit on residents who may want to avoid driving, and for tourists who wish to visit that do not drive.
+
+*Dynamic hypothesis:*
+There is poor public transport service from Forrest to Colac or Birregurra. One service per week does not enable general uptake of public transport. This is also an inequality issue, as people of lower incomes may not be able to afford to own or use a car, and this also restricts mobility for those unable to drive, due to age or disability. More tourists may visit if there was better public transport access.
+
+
+
+## *System conceptualisation*
+
+
+
+## *Model formulation*
+
+
+*** 
+
+## *Equations*
+
+"0-14"= INTEG (
+         Births 
+                          + "In-out migration 0-14" 
+                          - "Ageing 0-14" 
+                          - "Deaths 0-14",
+             
+                45)
+    Units: people
+    
+"65+"= INTEG (
+     "Ageing 15-64" 
+                      + "In-out migration 65+" 
+                      - "Deaths 65+",
+        20)
+Units: people
+
+age of pavement=
+    10
+Units: Year
+Assume 10 year old pavements at start of simulation
+
+ageing nonlinearity factor=
+    1.42
+Units: Dmnl
+
+allowable number of load cycles=
+    1e+08
+Units: trip/Year
+
+annual bus capacity discrapancy=
+    annual potential bus demand-max annual capacity of bus route
+Units: trip*people/Year
+
+annual potential bus demand=
+    average number of bus trips per year*number people with ability to travel by bus
+Units: trip*people/Year
+
+annual probability of flood=
+    0.01
+Units: Dmnl
+
+average litres of petrol per 100km=
+    11.1
+Units: litre
+https://www.abs.gov.au/statistics/industry/tourism-and-transport/
+        survey-motor-vehicle-use-australia/latest-release
+
+average number of bus trips per year=
+    156
+Units: trip/Year
+Assumption: 3 x return trips per week per person = 156 trips per 
+        person
+
+average trip distance=
+    19
+Units: Km
+Census travel to work daya
+
+bus capacity=
+    24
+Units: people
+Confirmed with bus line running route
+
+bus frequency=
+    52
+Units: trip/Year
+
+bus frequency required for travel equity=
+    travel equity bus demand/bus capacity
+Units: trip/Year
+
+bus frequency required for whole population=
+    annual potential bus demand/bus capacity
+Units: trip/Year
+
+car travel cost per year=
+    ((average litres of petrol per 100km*cost of petrol)/average trip distance
+)*car use
+Units: trip*dollar/(Year*Km)
+
+car use=
+    (number of cars in Forrest*number of car trips per year per car)
+Units: trip/Year
+
+corrective maintenance=
+    IF THEN ELSE(critical condition index >=50 :AND: critical condition index 
+<80, 1, 0.5)
+Units: Dmnl
+
+cost of petrol=
+    1.47
+Units: $/litre
+https://www.globalpetrolprices.com/Australia/Melbourne/gasoline_p
+        rices
+
+critical condition index=
+    MAX(52, Road Quality*100)
+Units: Dmnl
+
+damage to road from flooding=
+    0.5
+Units: Dmnl
+From Sultana et al 2015 - reduction in road structure of up to 
+        50%
+
+deterioration multiplier=
+    1.2
+Units: Dmnl
+
+effect of ageing of pavement on deterioration rate=
+    1+(age of pavement/service life of road)^ageing nonlinearity factor
+Units: Dmnl
+
+effect of flooding on road quality=
+    1-(damage to road from flooding*annual probability of flood)
+Units: Dmnl
+
+effect of road quality on deterioration rate=
+    1+(road quality multiplier*(1-Road Quality)^road quality nonlinearity factor
+)
+Units: Dmnl
+
+fraction of population who would choose to travel by bus=
+    0.35
+Units: Dmnl
+Aritrary value
+
+max annual capacity of bus route=
+    bus capacity*bus frequency
+Units: trip*people/Year
+
+number of car trips per year per car=
+    654
+Units: trip/(vehicle*Year)
+Vic total km travelled 2020 = 63,602,000,000 km Vic number of 
+        vehicles 2020 = 5,114,444 Avg trip distance = 19km Total km 
+        travelled/total no cars = 12,435km travelled by each car in one 
+        year Div by avg trip distance = 654 trips per year
+
+number of cars in Forrest=
+    LOOKUP EXTRAPOLATE(table for car ownership, Time )
+Units: vehicle
+
+number of people of reduced mobility=
+    "0-14"+"65+"+sum of people below poverty line
+Units: people
+This is a simplification - many people 65 and over will be able 
+        to drive, but as they age this will change
+
+Number Of Tourists= INTEG (
+    Rate of tourist increase,
+        0)
+Units: people/Year
+
+number people below poverty line[poverty line ss,Gender]=
+    number labour force in income bracket[poverty line ss,Gender]
+Units: people
+Poverty line is below first quartile ($0-399). This is in line 
+        with the ACOSS figure of $457
+
+number people with ability to travel by bus=
+    (fraction of population who would choose to travel by bus*total population
+)
+Units: people
+Multiply fraction by population on incorporation
+
+preventative maintenance=
+    IF THEN ELSE(critical condition index>=80, 1, 0.5)
+Units: Dmnl
+
+restorative maintenance=
+    IF THEN ELSE(critical condition index >=0, 1, 1)
+Units: Dmnl
+
+road damage ratio=
+    (car use+average number of bus trips per year+tourist trips per year)/allowable number of load cycles
+Units: Dmnl
+
+Road deterioration rate=
+    (deterioration multiplier*effect of ageing of pavement on deterioration rate
+*effect of road quality on deterioration rate
+    *road damage ratio*effect of flooding on road quality*Road Quality)/Time
+Units: 1/Year
+
+Road maintenance rate=
+    (IF THEN ELSE(Road Quality >= 0.8, 0, IF THEN ELSE(Road Quality >=0.6 :AND:
+ Road Quality <0.8, preventative maintenance, IF THEN ELSE(Road Quality >=0.4
+ :AND: Road Quality <0.6, corrective maintenance, IF THEN ELSE( Road Quality
+ >=0.2 :AND: Road Quality <0, restorative maintenance, restorative maintenance
+)))))/Time
+Units: 1/Year
+
+Road Quality= INTEG (
+    Road maintenance rate-Road deterioration rate,
+        0)
+Units: Dmnl
+
+road quality multiplier=
+    8.6
+Units: Dmnl
+
+road quality nonlinearity factor=
+    2
+Units: Dmnl
+
+service life of road=
+    30
+Units: Year
+
+sum of people below poverty line=
+    sum(number people below poverty line[poverty line ss!,Gender!])
+Units: people
+
+table for car ownership(
+    [(2000,0)-(2100,300)],(2006,266),(2011,172),(2016,167))
+Units: Dmnl
+Data from ABS: 2006 = 266; 2011 = 172; 2016 = 167
+
+total population=
+    "0-14" + "15-64" + "65+"
+Units: people
+
+tourist trips per year=
+    Number Of Tourists*trips per tourist
+Units: trip/Year
+
+travel equity bus demand=
+    average number of bus trips per year*number of people of reduced mobility
+Units: trip*people/Year
+
+travel equity bus frequency discrepancy=
+    bus frequency required for travel equity-bus frequency
+Units: trip/Year
+
+trips per tourist=
+    2
+Units: trip/person
+
+whole population bus frequency discrepancy=
+    bus frequency required for whole population-bus frequency
+Units: trip/Year
+
+

@@ -1,0 +1,130 @@
+area<-as.data.frame(xtabs(forrest_fire_area_$AREA_HA ~ forrest_fire_area_$SEASON, df))
+plot(area)
+
+FFA<-forrest_fire_area_
+FFA
+plot(FFA)
+summary(FFA)
+hist(FFA$AREA_HA)
+FFAH <- FFA$AREA_HA
+FFAH
+summary(FFAH)
+
+library(fitdistrplus)
+plotdist(FFA$AREA_HA, histo = TRUE, demp = TRUE)
+descdist(FFA$AREA_HA, boot = 1000)
+fw <- fitdist(FFAH[FFAH != 0], "weibull")
+summary(fw)
+fg <- fitdist(FFAH[FFAH != 0], "gamma")
+summary(fg)
+fln <- fitdist(FFAH[FFAH != 0], "lnorm")
+summary(fln)
+
+par(mfrow = c(2, 2))
+plot.legend <- c("Weibull", "lognormal", "gamma")
+denscomp(list(fw, fln, fg), legendtext = plot.legend)
+qqcomp(list(fw, fln, fg), legendtext = plot.legend)
+cdfcomp(list(fw, fln, fg), legendtext = plot.legend)
+ppcomp(list(fw, fln, fg), legendtext = plot.legend)
+library(actuar)
+par(mfrow = c(1,1))
+cdfcomp(list(fln, fg, fw), xlogscale = TRUE, ylogscale = TRUE, 
+        legendtext = c("lognormal", "gamma", "Weibull"))
+
+library(DescTools)
+
+FFAMax <- max(FFAH)
+GM<-Gmean(FFAH, method = "classic")
+
+Gsd(FFAH, na.rm = FALSE)
+
+log(FFAMax) #ln max value
+GM
+log(GM) #ln geometric mean
+
+####
+
+FFY <- c (1962, 1963, 1967, 1984, 1998, 2003, 2009, 2011)
+summary(FFY)
+
+2020-2011
+2011-2009
+2009-2003
+2003-1998
+1998-1984
+1984-1967
+1967-1963
+1963-1962
+
+DBW <- c(9, 2, 6, 5, 14, 17, 4, 1)
+max(DBW)
+min(DBW)
+mean(DBW)
+
+
+
+FFY <- c(1939, 1962, 1963, 1967, 1984, 1998, 2003, 2009, 2011)
+plot(FFY)
+hist(FFY)
+library(fitdistrplus)
+plotdist(FFY, histo = TRUE, demp = TRUE)
+descdist(FFY, boot = 1000)
+fw <- fitdist(FFY, "weibull")
+summary(fw)
+fg <- fitdist(FFY, "gamma")
+summary(fg)
+fln <- fitdist(FFY, "lnorm")
+summary(fln)
+fu <- fitdist(FFY, "unif")
+summary(fu)
+
+par(mfrow = c(2, 2))
+plot.legend <- c("Weibull", "lognormal", "gamma", "uniform")
+denscomp(list(fw, fln, fg, fu), legendtext = plot.legend)
+qqcomp(list(fw, fln, fg, fu), legendtext = plot.legend)
+cdfcomp(list(fw, fln, fg, fu), legendtext = plot.legend)
+ppcomp(list(fw, fln, fg, fu), legendtext = plot.legend)
+library(actuar)
+par(mfrow = c(1,1))
+cdfcomp(list(fln, fg, fw, fu), xlogscale = TRUE, ylogscale = TRUE, 
+        legendtext = c("lognormal", "gamma", "Weibull", "uniform"))
+
+
+#####
+
+COSFires<-hist(COS_fires$SEASON)
+fires <- subset(COS_fires, SEASON >=2005)  
+histf <- hist(fires$SEASON)  
+
+library(fitdistrplus)
+plotdist(COS_fires$SEASON, histo = TRUE, demp = TRUE)
+descdist(COS_fires$SEASON, boot = 1000)
+fw <- fitdist(COS_fires$SEASON[COS_fires$SEASON != 0], "weibull")
+summary(fw)
+fg <- fitdist(COS_fires$SEASON[COS_fires$SEASON != 0], "gamma")
+summary(fg)
+fln <- fitdist(COS_fires$SEASON[COS_fires$SEASON != 0], "lnorm")
+summary(fln)
+fg <- fitdist(COS_fires$SEASON[COS_fires$SEASON != 0], "geometric")
+summary(fe)
+
+par(mfrow = c(2, 2))
+plot.legend <- c("Weibull", "lognormal", "gamma")
+denscomp(list(fw, fln, fg), legendtext = plot.legend)
+qqcomp(list(fw, fln, fg), legendtext = plot.legend)
+cdfcomp(list(fw, fln, fg), legendtext = plot.legend)
+ppcomp(list(fw, fln, fg), legendtext = plot.legend)
+library(actuar)
+par(mfrow = c(1,1))
+cdfcomp(list(fln, fg, fw), xlogscale = TRUE, ylogscale = TRUE, 
+        legendtext = c("lognormal", "gamma", "Weibull"))
+
+
+
+histf$breaks
+no_fires <- histf$counts
+no_fires
+min(no_fires)
+max(no_fires)
+sd(no_fires)
+mean(no_fires)

@@ -1,0 +1,112 @@
+---
+title: "Infrastructure Documentation"
+author: "Katrina Szetey"
+date: "05/02/2021"
+output: html_document
+---
+
+# Infrastructure Overview
+
+The Forrest community have four major infrastructure projects currently in train which they have identified as being important for the future development and growth of Forrest. There is one additional project which is as important for the community but not reliant on outside intervention.
+
+## *Problem definition*
+
+
+
+## *System conceptualisation*
+
+
+
+## *Model formulation*
+
+
+
+## *Equations*
+
+
+
+## Second CFA Truck
+
+The community are raising funds for the CFA truck themselves so it is not reliant on outside fuding. Thus it is not dependent on the funding scenarios and funding allocation rate. 
+
+### Unit cost of CFA truck
+
+Type: constant  
+Formula: 350,000  
+Units: dollar/asset component  
+Assumption: one new CFA truck costs $350,000.  <p style="background-color:yellow;">Clarifying with Pete/Emma Ashton.</p>
+
+### Second CFA truck funding
+
+Type: constant  
+Formula: 350,000  
+Units: dollars/year  
+Assumption: It will take 1 year to raise all the money required. <p style="background-color:yellow;">Clarifying with Pete/Emma Ashton.</p> 
+
+### second CFA truck funding lag
+
+Type: constant  
+Formula: 1  
+Units: years  
+Assumption: It will take 1 year to raise all the money required  
+
+### second CFA truck build delay
+
+Type: constant  
+Formula: 0.5  
+Units: years  
+Assumption: It will take 0.5 years from ordering to delivery (ie build time)  
+
+### Second CFA truck construction rate
+
+Type: rate  
+Formula: DELAY1( second CFA truck funding/unit cost of CFA truck, second CFA truck build delay+second CFA truck funding lag)  
+Units: asset component/year  
+Assumption: The input is the number of asset components per year, the delay is the funding lag plus the build delay  
+
+***
+
+## Gateway to the Otways Centre
+
+The community want to use the former DELWP land on Grant St to build a new, state-of-the-art bushfire place of last resort. This building would also become a multi-purpose community centre and possibly have some function for tourism or conference facilities.  
+
+
+### GTOC funding approved
+
+Type: auxilliary
+Formula: IF THEN ELSE(funding scenario=1, 1.2e+07 , 0 )  
+Units: dollars  
+Assumption: The cost of building GTOC is $12,000,000  
+
+### Gateway to the Otways Centre Funding
+
+Type: stock  
+Formula: INTEG(-GTOC funding allocation rate, GTOC funding approved)  
+Units: dollars  
+Assumption:   
+
+### GTOC funding duration
+
+Type: constant  
+Formula: 2  
+Units: years  
+Assumption: The funding will continue for the same time as the build time  
+
+### GTOC funding allocation rate
+
+Type: Rate  
+Formula: Gateway to the Otways Centre Funding/GTOC funding duration  
+Units: dollars/year  
+Assumption: The project is fully funded
+
+
+### unit cost of GTOC
+
+Type: constant
+Formula: 1,200,000   
+Units: dollars per asset component  
+Assumption: Have arbitrarily assumed that the GTOC has 10 asset components (or 'build stages')  
+
+
+
+

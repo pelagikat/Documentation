@@ -1,0 +1,9 @@
+"0",""
+"0",""
+"2","Warning in gzfile(file, ""wb"") :"
+"2","
+ "
+"2"," cannot open compressed file 'C:/Users/szeteyka/OneDrive - Deakin University/PhD/Papers - Contributions/Paper 3 - Model Development/Git Repo/Forrest-SDGs-SD-Model/Documentation/.Rproj.user/shared/notebooks/DE5B0584-Population and Demographics/1/s/chcdcfzvevlnr_t/468e04dc2d6a452abc78c998eff888f4.snapshot', probable reason 'No such file or directory'
+"
+"2","Error in gzfile(file, ""wb"") : cannot open the connection
+"

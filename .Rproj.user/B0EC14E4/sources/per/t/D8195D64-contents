@@ -1,0 +1,64 @@
+####################################################################################
+#
+# Calculating species richness of the Forrest region, 
+# calculated using SDM's of ~10,000 species
+#    By: Carla Archibald
+#    Date: 19/04/2021
+#    Method: I have listed heaps of cool spatial R packages, and have mainly used 
+#            the 'raster' package.
+#
+####################################################################################
+library(raster) # Geographic Data Analysis and Modeling
+library(sf) # Simple Features for R
+library(exactextractr) # Fast Extraction from Raster Datasets using Polygons
+library(tidyverse) # Easily Install and Load the 'Tidyverse'
+library(stringr) # Simple, Consistent Wrappers for Common String Operations
+library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
+library(viridis) # Default Color Maps from 'matplotlib' 
+library(rasterVis) # Visualization Methods for Raster Data
+library(RColorBrewer) # ColorBrewer Palettes
+library(stars) # Spatiotemporal Arrays, Raster and Vector Data Cubes
+library(prettymapr) # Scale Bar, North Arrow, and Pretty Margins in R
+library(gdalUtils) # Wrappers for the Geospatial Data Abstraction Library (GDAL) Utilities
+
+#root = "N:/Current-Users/Carla-Archibald/Forrest_LGA_Katrina/"
+
+root = "C:/Users/szeteyka/OneDrive - Deakin University/PhD/Data/Biodiversity/Species richness data"
+
+# list raster files in directory
+spprFiles <- list.files(root, pattern = "*.tif$", full.names = TRUE)
+
+testtif <- raster("C:/Users/szeteyka/OneDrive - Deakin University/GIS Unit/R & QGIS Course/SPATIAL_ANALYSIS/1hillshade.tif")
+
+spprFiles
+amphibians <- raster(spprFiles[[1]])
+# read in raster files based on above list
+spprRaster <- lapply(spprFiles, raster)
+spprRaster <- stack(spprFiles)
+# basic plots of rasters ... use [[#]] to index specific rasters eg. plot(spprRaster[[1]])
+plot(spprRaster)
+res(spprRaster) # check raster resolution
+extent(spprRaster) # check raster extent
+
+# point to LGA file in directory
+colacOtawayShireLGAFile <- paste0(root,"lga_2010_aus/ColacOtawayShire_LGA.shp")
+# read in LGA file
+colacOtawayShireLGAPolygon <- st_read(colacOtawayShireLGAFile)
+# basic plots of polygon geometry 
+plot(colacOtawayShireLGAPolygon$geometry)
+
+
+# crop species richness stack to colacOtawayShireLGAPolygon
+spprRasterCrop <- crop(spprRaster,colacOtawayShireLGAPolygon)
+plot(spprRasterCrop)
+# create one species richness layer, Overlay() can also be used alternative way to do this
+spprRasterCropAll <- spprRasterCrop[[2]] + spprRasterCrop[[3]] + spprRasterCrop[[4]]
+plot(spprRasterCropAll)
+# writing out a raster
+writeRaster(spprRasterCropAll, filename = paste0(root,"colaLGA_historical_1990_baseline_species_richness.tif"), overwrite=TRUE, format="GTiff", options=c("COMPRESS=LZW"))
+
+
+#calculate maximum species richness value in LGA region
+cellStats(spprRasterCropAll,max)
+round(cellStats(spprRasterCropAll,mean))
+cellStats(spprRasterCropAll,min)

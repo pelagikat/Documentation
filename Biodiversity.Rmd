@@ -1,0 +1,23 @@
+---
+title: "Biodiversity"
+author: "Katrina Szetey"
+date: "20/05/2021"
+output: html_document
+---
+
+# Biodiversity overview
+
+
+## *Problem definition*
+
+
+
+## *System conceptualisation*
+
+
+
+## *Model formulation*
+
+
+
+## *Equations*

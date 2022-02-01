@@ -1,0 +1,57 @@
+---
+title: "Population and Demographics"
+author: "Katrina Szetey"
+date: "20/05/2021"
+bibliography: References.bib
+output: html_document
+---
+
+# Population and Demographics overview
+
+## *Problem definition*
+
+Between 2006 and 2016, Forrest experienced a 35% increase in population. Over that time, the number of children aged 0-14 decreased by 14% and people over 55 increased by 26%. The median age of a person living in Forrest has increased from 41 to 52. Forrest has a slowly increasing and ageing population, which will influence the needs of residents in the future.
+
+The population in Forrest is ageing due to in-migration of couples without children, and out-migration of young people for school and work after they finish high school.
+
+The population in Forrest is increasing due to in-migration of people for lifestyle reasons - enjoying the nature-based character and recreation opportunities of the town, and older tree-changers; and those seeking opportunities for tourism businesses. It is limited by housing availability.
+
+```{r}
+
+a = c(170, 45, 106, 20)
+b = c(238, 40, 165, 35)
+c = c(230, 28, 158, 45)
+
+df <- data.frame(row.names = c("Total", "0-14", "15-64", "65+"), "2006" = a, "2011" = b, "2016" = c)
+df <- do.call(rbind, df)
+df
+
+pop <- barplot(df, beside = TRUE, main = "Population change in Forrest 2006-2016", 
+               names.arg = c("Total", "0-14", "15-64", "65+"), ylim = c(0, 250), ylab = "Population", 
+               col = c("darkorange1", "gold", "forestgreen"))
+legend("topright", legend = c("2006", "2011", "2016"), 
+       fill = c("darkorange1", "gold", "forestgreen"))
+
+
+```
+
+
+
+## *System conceptualisation*
+
+The population of Forrest is not large (230 at the 2016 Census) and is easiest to split into three main cohorts: children (0-15), adults (16-64), and retirees (65+).
+
+Each of these cohorts has a migration and death rate specific to that cohort. There are ageing (maturation) rates between the 0-14 and 15-64 cohorts. 
+
+Migration rates for each cohort are influenced by different characteristics, some of which are modelled (e.g. labour and housing) and some which are not but are captured within a reference (i.e. initial) migration rate.
+
+
+## *Model formulation*
+
+The structure of this model component was based upon the model by @navarro_rusem_2019. Additional structure was added to incorporate the local school model within this component, and for the different effects on migration rate. <span style="background-color: #FFFF00">Potentially we can still link mortality rates to the Health and Wellbeing component.</span>
+
+
+
+## *Equations*
+
+# References 

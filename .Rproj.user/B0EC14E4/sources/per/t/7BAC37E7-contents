@@ -1,0 +1,127 @@
+---
+title: "Land Use Documentation"
+author: "Katrina Szetey"
+date: "11/02/2021"
+output: html_document
+---
+
+# Land Use Overview
+
+There are three major types of land use in Forrest: Agriculture (incorporating crop farming and livestock farming), Housing, and Bush/Forest. There is protected National Park land which will not leave the Bush/Forest stock. As an initial condition, we assume that agricultural land which is >40 hectares in size is classified as Farming Zone, and is thus protected from land use change (although the Forrest community would like this zoning modified so that Farming Zone land within the township could have more than one residence built on it). Housing land is primarily within the township. [This link](https://www.planning.vic.gov.au/__data/assets/pdf_file/0027/97182/PPN42-Applying-the-Rural-Zones_June-2015.pdf) discusses the different rural planning zones.
+
+## *Problem definition*
+
+
+
+
+## *System conceptualisation*
+
+
+
+## *Model formulation*
+
+
+
+## *Equations*
+
+
+***
+
+## Stock variables
+
+### Agricultural Land
+
+Formula: INTEG (  "Bush-Agriculture transfer rate" 
+                  - "Agricultural-Housing transfer rate")  
+INIT: INIT Agricultural land  
+Units: hectares  
+Assumptions: Total agricultural land  
+
+### Bush/Forest Land
+
+Formula: INTEG ( "Bush-Agriculture transfer rate" 
+                  - "Bush-Housing transfer rate")  
+INIT: "INIT Bush/Forest land"  
+Units: hectares  
+Assumptions: Total Bush/Forest land. We are including forestry plantation in this stock.  
+
+### Housing Land
+
+Formula: INTEG (  "Agricultural-Housing transfer rate" 
+                  + "Bush-Housing transfer rate")  
+INIT: INIT Housing Land  
+Units: hectares  
+Assumptions: Total Housing land  
+
+### Forest Protected Land
+
+Formula: INTEG (  Forest Protected Land Change )  
+INIT: INIT Forest Protected Land  
+Units: hectares  
+Assumptions: National Park area will remain protected over time  
+
+### Fertilisation Intensity
+
+Formula: INTEG ( Fertilisation Intensity Change )  
+INIT: INIT Fertilisation Intensity  
+Units: TonNutrient/(ha*Year)  
+Assumptions: Intensity of fertilisation practices per ha per year. Unchanged from FeliX.  
+
+***
+
+## Rate variables
+
+### Bush-Agriculture transfer rate
+
+Formula: MAX ( 0, 
+             Bush Agriculture change 
+                  * ( "Bush/Forest Land" 
+                       - Forest Protected Land ) 
+                  / ( Bush to Agriculture land allocation time ) )
+             + MIN ( 0, 
+                  Bush Agriculture change 
+                       * ( Agricultural Land 
+                            - Agriculture Protected Land ) 
+                       / Agriculture to Bush land allocation time )  
+Units: ha/Year  
+Assumptions: Currently assuming negligible change between these stocks, but may not be accurate  
+
+### Agriculture-Housing transfer rate
+
+Formula: MAX ( 0, 
+             "Agriculture-Housing change" 
+                  * ( Agricultural Land 
+                       - Agriculture Protected Land ) 
+                  / Agriculture to Housing land allocation time )    
+Units: ha/Year  
+Assumptions: This will likely be the most influential in Forrest. The 40-ha rule variable will affect this.  
+
+### Bush-Housing transfer rate
+
+Formula: MAX ( 0, 
+             "Bush-Housing change" 
+                  * ( "Bush/Forest Land" 
+                       - Forest Protected Land ) 
+                  / Bush to Housing land allocation time )  
+Units: ha/Year
+Assumptions: Currently assuming negligible change between these stocks, but may not be accurate  
+
+### Forest Protected Land Change
+
+Formula: DELAY3 ( Forest Protected Land 
+                  * Current to Max Forest Protected Land , 
+             Time to Adjust Forest Protected Land )  
+Units: ha/Year  
+Assumptions: Unmodified from FeliX  
+
+### Fertilsation Intensity Change
+
+Formula: Fertilisation Intensity 
+             * Current to Max Fertilisation Intensity 
+             / Time to Adjust Fertilisation Intensity  
+Units: TonNutrient/(Year*Year*ha)  
+Assumptions: Unmodified from FeliX  
+
+*** 
+
+## Auxiliary variables

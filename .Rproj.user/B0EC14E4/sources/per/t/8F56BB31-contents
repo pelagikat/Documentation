@@ -1,0 +1,23 @@
+y <- c(167, 172, 266)
+x <- c(2016, 2011, 2006)
+plot (x,y, pch = 20)
+
+#fit first degree polynomial equation:
+fit  <- lm(y~x)
+#second degree
+fit2 <- lm(y~poly(x,2,raw=TRUE))
+
+#generate range of 50 numbers starting from 30 and ending at 160
+xx <- seq(2006,2016, length=50)
+plot(x,y,pch=19,ylim=c(0,300))
+lines(xx, predict(fit, data.frame(x=xx)), col="red")
+lines(xx, predict(fit2, data.frame(x=xx)), col="green")
+
+summary (fit)
+summary(fit2)
+anova(fit, fit2)
+
+#y=ax + b
+coef(fit)
+
+# y = -9.9x + 201110

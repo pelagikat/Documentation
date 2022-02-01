@@ -1,0 +1,339 @@
+---
+title: "Demographics component documentation"
+author: "Katrina Szetey"
+date: "31/01/2022"
+bibliography: poprefs.bib
+output: html_document
+---
+
+# Population and Demographics overview
+
+Forrest has been a regional Victorian township since 1890 and developed around the railway built to transport Otway timber and produce. The population has waxed and waned with its timber and forestry activities, at a peak in the 1960s. With tourism having replaced forestry as the primary economic activity in Forrest, this too may result in volatility in population (especially with the impact on tourism from the Covid-19 pandemic).
+
+## *Problem definition*
+
+1. Between 2006 and 2016, Forrest experienced a 35% increase in population. Over that time, the number of children aged 0-14 decreased by 14% and people over 55 increased by 26%. The median age of a person living in Forrest has increased from 41 to 52. Forrest has a slowly increasing and ageing population, which will influence the needs of residents in the future.
+
+*Dynamic hypothesis:*
+The population in Forrest is ageing due to in-migration of couples without children, and out-migration of young people for school and work after they finish high school. It is limited by housing availability and a lack of diversity in job opportunities.
+
+2. With Forrest Primary School being the central school, pre-school, and childcare service for the community and neighbouring townships, it creates traffic for local businesses in town. It also works with many of the community groups in Forrest. If Forrest were to lose its primary school, there would be many negative knock-on effects causing harm to Forrest’s future, such as out-migration of families seeking access to closer schools.
+
+*Dynamic hypothesis:*
+The location of the primary school in Forrest makes it a central hub for the neighbouring communities. This brings in regular visitation from people outside of the township who may then go and patronise local businesses. If the school were to close, this regular visitation would likely slow down or cease, and have effects upon those businesses.
+
+
+```{r}
+# Data for population taken from ABS census data for Forrest as a State Suburb
+
+a = c(170, 45, 106, 20)
+b = c(238, 40, 165, 35)
+c = c(230, 28, 158, 45)
+
+df <- data.frame(row.names = c("Total", "0-14", "15-64", "65+"), "2006" = a, "2011" = b, "2016" = c)
+df <- do.call(rbind, df)
+df
+
+pop <- barplot(df, beside = TRUE, main = "Population change in Forrest 2006-2016", 
+               names.arg = c("Total", "0-14", "15-64", "65+"), ylim = c(0, 250), ylab = "Population", 
+               col = c("#E69F00", "#56B4E9", "#009E73"))
+legend("topright", legend = c("2006", "2011", "2016"), 
+       fill = c("#E69F00", "#56B4E9", "#009E73"))
+
+
+```
+
+## *System conceptualisation*
+
+The population of Forrest is not large (230 at the 2016 Census) and is easiest to split into three main cohorts: children (0-15), adults (16-64), and retirees (65+).
+
+Each of these cohorts has a migration and death rate specific to that cohort. There are ageing (maturation) rates between the 0-14 and 15-64 cohorts. 
+
+Migration rates for each cohort are influenced by different characteristics, some of which are modelled (e.g. job availability and housing) and some which are not but are captured within a reference (i.e. initial) migration rate.
+
+School enrolments are made up of local children aged 4-10 (half of the 0-14 cohort) and from 'district' children (i.e., from surrounding townships that make up "Forrest and District").
+
+
+## *Model formulation*
+
+The structure of this model component was based upon the model by @navarro_rusem_2019. Additional structure was added to incorporate the local school model within this component, and for the different effects on migration rate.
+
+## Data sources
+
+[Data for births.](https://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/3301.02018?OpenDocument) We used data for the Colac Otway LGA.
+
+Census data for Forrest available [here.](https://www.abs.gov.au/websitedbs/D3310114.nsf/Home/2016%20QuickStats) Data for Forrest as a distinct location is only available for 2006, 2011 and 2016 censuses.
+
+Data for deaths was obtained from ABS.stat, which has now been decommissioned and replaced by [ABS Data Explorer.](https://explore.data.abs.gov.au/) For death rates we had to use state-level data as this was the only way to get age-disaggregated death data.
+
+
+***
+
+## *Equations*
+
+### 0-14
+
+Type: Stock  
+Formula: INTEG( Births + "In-out migration 0-14" - "Ageing 0-14" - "Deaths 0-14"), INITIAL = 45  
+Units: people  
+Assumptions/data: Intial value from 2006 census (earliest township-specific census data available)  
+
+### Births
+
+Type: Auxiliary (rate)  
+Formula: ( "15-64" * fertility rate ) / 2  
+Units: people/Year  
+Assumptions/data: Number of births per year. Assume half of the 15-64 cohort are able to bear children  
+
+### fertility rate
+
+Type: Constant  
+Formula: 0.07  
+Units: 1/Year  
+Assumptions/data: The number of live births per woman aged 15-64 each year. Derived from calibration of the model against data.  
+
+### In-out migration 0-14
+
+Type: Auxiliary (rate)  
+Formula: "migration rate 0-14" * "0-14"  
+Units: people/Year  
+Assumptions/data: net migration per year for 0-14 cohort  
+
+### migration rate 0-14
+
+Type: Auxiliary  
+Formula: "migration rate 15-64" 8 "reference migration rate 0-14"  
+Units: 1/Year  
+Assumptions/data: Migration rate of 0-14 cohort will be strongly influenced by the migration rate of their parents' cohort.  
+
+### reference migration rate 0-14
+
+Type: Constant  
+Formula: -4  
+Units: Dmnl  
+Assumptions/data: Derived from calibration of the model against data.  
+
+### Deaths 0-14
+
+Type: Auxiliary (rate)  
+Formula: "mortality rate 0-14" * "0-14"  
+Units: people/Year  
+Assumptions/data: Number of deaths per year of the 0-14 cohort  
+
+### mortality rate 0-14
+
+Type: Constant  
+Formula: 0.00031  
+Units: 1/Year  
+Assumptions/data: Derived from data aggregated at state level  
+
+### Ageing 0-14
+
+Type: Auxiliary (rate)  
+Formula: "0-14" / "maturation factor 0-14"  
+Units: people/Year  
+Assumptions/data: Number of population 0-14 moving to next age group  
+
+### maturation factor 0-14
+
+Type: Constant  
+Formula: 14  
+Units: Year  
+Assumptions/data: The length of time a person can spend in the cohort before maturing into the next (max age - min age)  
+
+### 15-64
+
+Type: Stock  
+Formula: INTEG( "Ageing 0-14" + "In-out migration 15-64" - "Ageing 15-64" - "Deaths 15-64"), INITIAL = 106  
+Units: people  
+Assumptions/data: Intial value from 2006 census (earliest township-specific census data available)  
+
+### In-out migration 15-64
+
+Type: Auxiliary (rate)  
+Formula: "migration rate 15-64" * "15-64"  
+Units: people/Year  
+Assumptions/data: Net migration per year for the 15-64 cohort  
+
+### migration rate 15-64
+
+Type: Auxiliary  
+Formula: "reference 15-64 migration rate" * effect of job availability on migration * effect of housing on migration * job availability unit conversion factor  
+Units: 1/Year  
+Assumptions/data:  Potentially problematic if the reference rate is negative  
+
+### reference 15-64 migration rate
+
+Type: Constant  
+Formula: 0.02  
+Units: 1/Year  
+Assumptions/data: Migration rates calibrated against from Otway SA2 data: the average rate for 2017-2019  
+
+### job availability unit conversion factor
+
+Type: Constant  
+Formula: 1  
+Units: people * Year/job  
+Assumptions/data: This is a unit correction variable  
+
+### effect of job availability on migration
+
+Type: Auxiliary  
+Formula: ("job vacancies (agriculture) filled externally"+"job vacancies (other) filled externally"+"job vacancies (tourism) filled externally") / "working-age population"  
+Units: job/(people * Year)  
+Assumptions/data: The job to labour force ratio  
+
+### effect of housing on migration
+
+Type: Auxiliary  
+Formula: IF THEN ELSE( housing supply demand ratio > 1, 
+(IF THEN ELSE("social housing supply/demand ratio" = 0, 
+(average house price/reference average house price) * housing supply demand ratio, 
+(average house price/reference average house price) * housing supply demand ratio * "social housing supply/demand ratio")), 1)  
+Units: Dmnl  
+Assumptions/data: As demand goes up, supply goes down and the ratio also goes down, and the prices go up.
+Additionally, if the housing supply/demand ratio is less than 1, then there aren't enough houses available for new families to move in unless existing families move out, so the effect of housing on net migration is zero (this also affects all other effect variables on migration).  
+
+### Deaths 15-64  
+
+Type: Auxiliary (rate)  
+Formula: "15-64" * "mortality rate 15-64"  
+Units: people/Year  
+Assumptions/data: Number of deaths in a year for the 15-64 cohort  
+
+### mortality rate 15-64
+
+Type: Constant  
+Formula: 0.00156  
+Units: 1/Year  
+Assumptions/data: Constant derived from data aggregated at state level  
+
+### Ageing 15-64
+
+Type: Auxiliary (rate)  
+Formula: "15-64" / "maturation factor 15-64"  
+Units: people/Year  
+Assumptions/data: Number of population 15-64 moving to next age group  
+
+### maturation factor 15-64  
+
+Type: Constant  
+Formula: 49  
+Units: Year  
+Assumptions/data: Cohort residence time max age - min age  
+
+### 65+
+
+Type: Stock  
+Formula: INTEG( "Ageing 15-64" + "In-out migration 65+" - "Deaths 65+"), INITAL = 20  
+Units: people  
+Assumptions/data: Inital value taken from 2006 Census data (earliest township-specific census data available)   
+
+### Deaths 65+
+
+Type: Auxiliary (rate)  
+Formula: "65+" * "mortality rate 65+"  
+Units: people/Year  
+Assumptions/data:  
+
+### mortality rate 65+  
+
+Type: Constant  
+Formula: 0.03694  
+Units: 1/Year  
+Assumptions/data: Derived from data aggregated at state level  
+
+### In-out migration 65+ 
+
+Type: Auxiliary (rate)  
+Formula: "migration rate 65+" * "65+"  
+Units: people/Year  
+Assumptions/data: Net migration per year  
+
+### migration rate 65+  
+
+Type:  Auxiliary  
+Formula: "reference 65+ migration rate" * effect of housing on migration  
+Units: 1/Year  
+Assumptions/data:  
+
+### reference migration rate 65+  
+
+Type: Constant  
+Formula: -0.01  
+Units: 1/Year  
+Assumptions/data: Derived from calibration of the model against data.  
+
+### total population  
+
+Type: Auxiliary  
+Formula: "0-14" + "15-64" + "65+"  
+Units: people  
+Assumptions/data: sum of all population cohorts  
+
+### School Enrolments  
+
+Type: Stock  
+Formula: INTEG(New enrolments - Outgoing school cohort), INITIAL = 31  
+Units: people  
+Assumptions/data: Inital data 31 students enrolled in 2019  
+
+### New enrolments  
+
+Type: Auxiliary (rate)  
+Formula: (( district 0 to 14 cohort + "0-14" )/cohort time * enrolment ratio)  
+Units: people/Year  
+Assumptions/data: To prevent 're-enrolment' of the same student each year, divide the cohort values by 'cohort time' so each enrolment is new.  
+
+### cohort time  
+
+Type: Constant  
+Formula: 7  
+Units: Dmnl  
+Assumptions/data: To prevent 're-enrolment' of the same student each year, divide the cohort values by 7 so each enrolment is new.  
+
+### enrolment ratio  
+
+Type: Constant  
+Formula: 0.5  
+Units: 1/Year  
+Assumptions/data: Only half of the 0-14 cohort will enrol at the local primary school (age 4-10)  
+
+### district 0-14 cohort  
+
+Type: Auxiliary  
+Formula: INTEGER (RANDOM NORMAL ( 0, 76, 38, 1, 0 ))  
+Units: people  
+Assumptions/data: Selecting from a normal distrbution to obtain values for enrolments external to Forrest's population. The parameters are min = 0, max = 76, mean = 38, SD = 1, based on populations from the townships in the district.  
+
+### number of childcare enrolments  
+
+Type: Auxiliary  
+Formula: INTEGER ( ( district 0 to 14 cohort + "0-14" ) * 0.25)  
+Units: people  
+Assumptions/data: Arbitrary value of one quarter of 0-14 cohort (have no data for this)  
+
+### district kids' parents cohort  
+
+Type: Auxiliary  
+Formula: INTEGER ( (district 0 to 14 cohort * 0.75) * 1.5)  
+Units: people  
+Assumptions/data: Multiply by 1.5 to capture both parents with some wiggle room for single parents etc
+Multiply by 0.75 to take into account 0.5 enrolment ratio (ie, only half of cohort are of primary school age) and 0.25 for childcare  
+
+### Outgoing school cohort  
+
+Type: Auxiliary (rate)  
+Formula: School Enrolments / maturation of school students  
+Units: people/Year  
+Assumptions/data:  
+
+### maturation of school students  
+
+Type: Constant  
+Formula: 7  
+Units: people  
+Assumptions/data: School age cohort tenure time (max age - min age)  
+
+
+# References 
