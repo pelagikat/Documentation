@@ -1,7 +1,8 @@
 ---
 title: "Inequality component documentation"
 author: "Katrina Szetey"
-date: "20/05/2021"
+date: "02/02/2022"
+bibliography: ineq.bib
 output: html_document
 ---
 
@@ -15,7 +16,8 @@ In the greater Otway region, 19% of people live in poverty and the median family
 Intergenerational inequality is only one factor. Other contributing factors are income inequality, employment, the social gradient of health, housing stress, travel inequality, and internet access.
 
 
-## *System conceptualisation*
+## *System conceptualisation and model formulation*
+The inequality system is by nature both difficult to measure and multifaceted. To gauge the level of inequality in the Forrest system, we identified a range of contributing factors and normalised them, then took the arithmetic mean to arrive an an indicator value.
 
 
 ### Conceptual model
@@ -36,173 +38,82 @@ H(Travel inequality)-->D(Inequality indicator)
 
 ```
 
-
-
-
-## *Model formulation*
-
+Data are available at [https://github.com/pelagikat/Local-SDGs-systems-model](https://github.com/pelagikat/Local-SDGs-systems-model)
 
 *** 
 
 ## *Equations*
+   
+### disability fraction  
 
-"0-14"= INTEG (
-         Births 
-                          + "In-out migration 0-14" 
-                          - "Ageing 0-14" 
-                          - "Deaths 0-14",
-             
-                45)
-    Units: people
-    
-bus frequency=
-    52
-Units: trip/Year
+Type: Constant  
+Formula: 0.177  
+Units: Dmnl  
+Assumptions: Data obtained from [https://www.abs.gov.au/statistics/health/disability/disability-ageing-and-carers-australia-summary-findings/2018](Percentage of population who have a disability)  
 
-bus frequency required for travel equity=
-    travel equity bus demand/bus capacity
-Units: trip/Year
+### households without internet access fraction  
 
-disability fraction=
-    0.177
-Units: Dmnl
-https://www.abs.gov.au/statistics/health/disability/disability-ag
-        eing-and-carers-australia-summary-findings/2018 Percentage of 
-        population who have a disability
+Type: Auxiliary  
+Formula: 1-households with internet access fraction  
+Units: Dmnl  
+Assumptions: 1 minus the fraction of those with internet access (from Telecommunications)  
 
-households with internet access fraction=
-    0.77
-Units: fraction
-From ABS data: 77% of households accessed the internet from 
-        their home
+### income distribution by income cohort  
 
-households without internet access fraction=
-    1-households with internet access fraction
-Units: Dmnl
+Type: Auxiliary
+Formula: sum(income distribution fractions by income cohort and gender)  
+Units: Dmnl  
+Assumptions: This variable is split (subscripted) across 15 income cohorts (negative, nil, $1-$149, $150-$299, $300-$399, $400-$499, $500-$649, $650-$799, $800-$999, $1,000-$1,249, $1,250-$1,499, $1,250-$1,499, $1,750-$1,999, $2,000-$2,999, $3,000 or more) and summed over the two gender categories  
 
-income distribution by income cohort[Negative]=
-    sum(income distribution fractions by income cohort and gender[Negative,Gender
-!])
-income distribution by income cohort[Nil]=
-        sum(income distribution fractions by income cohort and gender[Nil,Gender!
-    ])
-income distribution by income cohort["$1-$149"]=
-        sum(income distribution fractions by income cohort and gender["$1-$149",Gender
-    !])
-income distribution by income cohort["$150-$299"]=
-        sum(income distribution fractions by income cohort and gender["$150-$299"
-    ,Gender!])
-income distribution by income cohort["$300-$399"]=
-        sum(income distribution fractions by income cohort and gender["$300-$399"
-    ,Gender!])
-income distribution by income cohort["$400-$499"]=
-        sum(income distribution fractions by income cohort and gender["$400-$499"
-    ,Gender!])
-income distribution by income cohort["$500-$649"]=
-        sum(income distribution fractions by income cohort and gender["$500-$649"
-    ,Gender!])
-income distribution by income cohort["$650-$799"]=
-        sum(income distribution fractions by income cohort and gender["$650-$799"
-    ,Gender!])
-income distribution by income cohort["$800-$999"]=
-        sum(income distribution fractions by income cohort and gender["$800-$999"
-    ,Gender!])
-income distribution by income cohort["$1,000-$1,249"]=
-        sum(income distribution fractions by income cohort and gender["$1,000-$1,249"
-    ,Gender!])
-income distribution by income cohort["$1,250-$1,499"]=
-        sum(income distribution fractions by income cohort and gender["$1,250-$1,499"
-    ,Gender!])
-income distribution by income cohort["$1,500-$1,749"]=
-        sum(income distribution fractions by income cohort and gender["$1,500-$1,749"
-    ,Gender!])
-income distribution by income cohort["$1,750-$1,999"]=
-        sum(income distribution fractions by income cohort and gender["$1,750-$1,999"
-    ,Gender!])
-income distribution by income cohort["$2,000-$2,999"]=
-        sum(income distribution fractions by income cohort and gender["$2,000-$2,999"
-    ,Gender!])
-income distribution by income cohort["$3,000 or more"]=
-        sum(income distribution fractions by income cohort and gender["$3,000 or more"
-    ,Gender!])
-    Units: Dmnl
-    
-income distribution fractions by income cohort and gender[Negative,Gender]=
-    0.006, 0.0022
-income distribution fractions by income cohort and gender[Nil,Gender]=
-        0.0105, 0.009
-income distribution fractions by income cohort and gender["$1-$149",Gender]
-    =
-        0.0224, 0.0269
-income distribution fractions by income cohort and gender["$150-$299",Gender
-    ]=
-        0.0284, 0.0396
-income distribution fractions by income cohort and gender["$300-$399",Gender
-    ]=
-        0.0366, 0.0403
-income distribution fractions by income cohort and gender["$400-$499",Gender
-    ]=
-        0.0448, 0.0612
-income distribution fractions by income cohort and gender["$500-$649",Gender
-    ]=
-        0.0523, 0.0717
-income distribution fractions by income cohort and gender["$650-$799",Gender
-    ]=
-        0.0605, 0.0695
-income distribution fractions by income cohort and gender["$800-$999",Gender
-    ]=
-        0.0859, 0.0471
-income distribution fractions by income cohort and gender["$1,000-$1,249",Gender
-    ]=
-        0.0799, 0.0381
-income distribution fractions by income cohort and gender["$1,250-$1,499",Gender
-    ]=
-        0.0276, 0.0224
-income distribution fractions by income cohort and gender["$1,500-$1,749",Gender
-    ]=
-        0.0246, 0.0261
-income distribution fractions by income cohort and gender["$1,750-$1,999",Gender
-    ]=
-        0.0202, 0.003
-income distribution fractions by income cohort and gender["$2,000-$2,999",Gender
-    ]=
-        0.0194, 0.0105
-income distribution fractions by income cohort and gender["$3,000 or more",
-    Gender]=
-        0.0112, 0.0075
-    Units: Dmnl
-    Weekly income
+### income distribution fractions by income cohort and gender  
 
-inequality indicator=
-    (disability fraction+households without internet access fraction+normalised intergenerational inequality youth at risk
-+
-    normalised poverty line+normalised travel inequality+normalised unemployed
-+normalised housing stress)/7
-Units: Dmnl
-Arithmetic mean
+Type: Constant  
+Formula: [Negative; M,F] = 0.006, 0.0022  
+[Nil; M,F] = 0.0105, 0.009  
+["$1-$149"; M,F] = 0.0224, 0.0269  
+["$150-$299"; M,F] = 0.0284, 0.0396  
+["$300-$399"; M,F] = 0.0366, 0.0403  
+["$400-$499"; M,F] = 0.0448, 0.0612  
+["$500-$649"; M,F] = 0.0523, 0.0717  
+["$650-$799"; M,F] = 0.0605, 0.0695  
+["$800-$999"; M,F] = 0.0859, 0.0471  
+["$1,000-$1,249"; M,F] = 0.0799, 0.0381  
+["$1,250-$1,499"; M,F] = 0.0276, 0.0224  
+["$1,500-$1,749"; M,F] = 0.0246, 0.0261  
+["$1,750-$1,999"; M,F] = 0.0202, 0.003  
+["$2,000-$2,999"; M,F] = 0.0194, 0.0105  
+["$3,000 or more"; M,F] = 0.0112, 0.0075  
+Units: Dmnl  
+Assumptions: Data from 2016 census, for weekly income. Disaggregated by gender - ABS only uses male and female for gender so is not comprehensive. Formulas above list [male, female]. See Github for data.
 
-intergenerational risk factor=
-    1.8
-Units: structure/people
-Cobb-Clark et al 2017 estimate it is 1.8 times more likely for 
-        children of parents receivng long-term welfare to receive 
-        welfare themselves http://ftp.iza.org/dp11070.pdf
+### inequality indicator  
 
-labour force[Male]=
-    residents in paid work[Male] 
-                 + unemployed residents[Male]
-labour force[Female]=
-        residents in paid work[Female]+unemployed residents[Female]
-    Units: people
-    
-normalised housing stress=
-    (number of households under mortgage stress + number of households under rent stress
-)/Residential Housing
-Units: Dmnl
+Type: Auxiliary  
+Formula: (disability fraction + households without internet access fraction + normalised intergenerational inequality youth at risk +normalised poverty line + normalised travel inequality + normalised unemployed
+ + normalised housing stress) / 7  
+Units: Dmnl  
+Assumptions: Arithmetic mean of normalised input variables  
 
-normalised intergenerational inequality youth at risk=
-    number of young people at risk for intergenerational inequality/"0-14"
-Units: Dmnl
+### intergenerational risk factor  
+
+Type: Constant  
+Formula: 1.8  
+Units: structure/people  
+Assumptions: @cobb-clarke_intergenerational_2017 estimate it is 1.8 times more likely for children of parents receiving long-term welfare to receive welfare themselves  
+
+### normalised housing stress
+
+Type: Auxiliary  
+Formula: (number of households under mortgage stress + number of households under rent stress) / Residential Housing  
+Units: Dmnl  
+Assumptions: Normalisation by number of residential households  
+
+### normalised intergenerational inequality youth at risk  
+
+Type: Auxiliary  
+Formula: number of young people at risk for intergenerational inequality / "0-14"  
+Units: Dmnl  
+Assumptions: Normalisation by 0-14 age cohort population  
 
 normalised poverty line=
     sum of people below poverty line/total population
@@ -276,3 +187,4 @@ Units: job/Year
 -"labour demand (tourism)", 0)
 Units: job/Year
 
+# References

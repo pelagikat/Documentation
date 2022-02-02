@@ -1,7 +1,7 @@
 ---
 title: "Infrastructure component documentation"
 author: "Katrina Szetey"
-date: "05/02/2021"
+date: "02/02/2022"
 output: html_document
 ---
 
@@ -33,6 +33,30 @@ If funding can be obtained for the Gateway to The Otways Centre, this would have
 
 
 ## *System conceptualisation*
+
+
+### Conceptual model
+```{r, echo = FALSE, warning = FALSE}
+library(DiagrammeR)
+
+grViz("
+digraph {
+  graph[layout = dot, rankdir = LR]
+  node[shape = box, fontname = Arial]
+  'Funding'; 'Build in progress'; 'Completed infrastructure'
+
+  node[shape = oval, fontname = Arial]
+  'Time delay'
+
+  # edge statements
+  'Funding'->'Build in progress' 'Build in progress'->'Completed infrastructure'
+  'Time delay'->'Funding' 'Time delay'->'Build in progress'
+ 
+}
+")
+
+```
+
 
 
 

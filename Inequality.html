@@ -11,6 +11,7 @@
 
 <meta name="author" content="Katrina Szetey" />
 
+<meta name="date" content="2022-02-02" />
 
 <title>Inequality component documentation</title>
 
@@ -174,7 +175,7 @@ pre code {
 
 <h1 class="title toc-ignore">Inequality component documentation</h1>
 <h4 class="author">Katrina Szetey</h4>
-<h4 class="date">20/05/2021</h4>
+<h4 class="date">02/02/2022</h4>
 
 </div>
 
@@ -186,32 +187,71 @@ pre code {
 <p>In the greater Otway region, 19% of people live in poverty and the median family income in Forrest is 55% lower than for the rest of Victoria (2016). Twenty percent of all families in Forrest are single-parent families (and all single parents are women). The SEIFA score (a measure of socio-economic conditions) puts Forrest in the 30% most disadvantaged areas in the country, and the 20% most disadvantaged in Victoria.</p>
 <p><em>Dynamic hypothesis:</em> Intergenerational inequality is only one factor. Other contributing factors are income inequality, employment, the social gradient of health, housing stress, travel inequality, and internet access.</p>
 </div>
-<div id="system-conceptualisation" class="section level2">
-<h2><em>System conceptualisation</em></h2>
+<div id="system-conceptualisation-and-model-formulation" class="section level2">
+<h2><em>System conceptualisation and model formulation</em></h2>
+<p>The inequality system is by nature both difficult to measure and multifaceted. To gauge the level of inequality in the Forrest system, we identified a range of contributing factors and normalised them, then took the arithmetic mean to arrive an an indicator value.</p>
 <div id="conceptual-model" class="section level3">
 <h3>Conceptual model</h3>
-<div id="htmlwidget-addce010c49a15a7d3fe" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-addce010c49a15a7d3fe">{"x":{"diagram":"\ngraph LR\nA(Intergenerational inequality)-->D(Inequality indicator)  \nB(Internet access)-->D(Inequality indicator) \nC(Unemployment)-->D(Inequality indicator)\nE(Poverty)-->D(Inequality indicator)\nF(Disability)-->D(Inequality indicator)\nG(Housing stress)-->D(Inequality indicator)\nH(Travel inequality)-->D(Inequality indicator)\n        "},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-<div id="model-formulation" class="section level2">
-<h2><em>Model formulation</em></h2>
+<div id="htmlwidget-3ef8ff75864bd7b940b1" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3ef8ff75864bd7b940b1">{"x":{"diagram":"\ngraph LR\nA(Intergenerational inequality)-->D(Inequality indicator)  \nB(Internet access)-->D(Inequality indicator) \nC(Unemployment)-->D(Inequality indicator)\nE(Poverty)-->D(Inequality indicator)\nF(Disability)-->D(Inequality indicator)\nG(Housing stress)-->D(Inequality indicator)\nH(Travel inequality)-->D(Inequality indicator)\n        "},"evals":[],"jsHooks":[]}</script>
+<p>Data are available at <a href="https://github.com/pelagikat/Local-SDGs-systems-model">https://github.com/pelagikat/Local-SDGs-systems-model</a></p>
 <hr />
+</div>
 </div>
 <div id="equations" class="section level2">
 <h2><em>Equations</em></h2>
-<p>“0-14”= INTEG ( Births + “In-out migration 0-14” - “Ageing 0-14” - “Deaths 0-14”,</p>
-<pre><code>            45)
-Units: people</code></pre>
-<p>bus frequency= 52 Units: trip/Year</p>
-<p>bus frequency required for travel equity= travel equity bus demand/bus capacity Units: trip/Year</p>
-<p>disability fraction= 0.177 Units: Dmnl <a href="https://www.abs.gov.au/statistics/health/disability/disability-ag" class="uri">https://www.abs.gov.au/statistics/health/disability/disability-ag</a> eing-and-carers-australia-summary-findings/2018 Percentage of population who have a disability</p>
-<p>households with internet access fraction= 0.77 Units: fraction From ABS data: 77% of households accessed the internet from their home</p>
-<p>households without internet access fraction= 1-households with internet access fraction Units: Dmnl</p>
-<p>income distribution by income cohort[Negative]= sum(income distribution fractions by income cohort and gender[Negative,Gender !]) income distribution by income cohort[Nil]= sum(income distribution fractions by income cohort and gender[Nil,Gender! ]) income distribution by income cohort[“$1-$149”]= sum(income distribution fractions by income cohort and gender[“$1-$149”,Gender !]) income distribution by income cohort[“$150-$299”]= sum(income distribution fractions by income cohort and gender[“$150-$299” ,Gender!]) income distribution by income cohort[“$300-$399”]= sum(income distribution fractions by income cohort and gender[“$300-$399” ,Gender!]) income distribution by income cohort[“$400-$499”]= sum(income distribution fractions by income cohort and gender[“$400-$499” ,Gender!]) income distribution by income cohort[“$500-$649”]= sum(income distribution fractions by income cohort and gender[“$500-$649” ,Gender!]) income distribution by income cohort[“$650-$799”]= sum(income distribution fractions by income cohort and gender[“$650-$799” ,Gender!]) income distribution by income cohort[“$800-$999”]= sum(income distribution fractions by income cohort and gender[“$800-$999” ,Gender!]) income distribution by income cohort[“$1,000-$1,249”]= sum(income distribution fractions by income cohort and gender[“$1,000-$1,249” ,Gender!]) income distribution by income cohort[“$1,250-$1,499”]= sum(income distribution fractions by income cohort and gender[“$1,250-$1,499” ,Gender!]) income distribution by income cohort[“$1,500-$1,749”]= sum(income distribution fractions by income cohort and gender[“$1,500-$1,749” ,Gender!]) income distribution by income cohort[“$1,750-$1,999”]= sum(income distribution fractions by income cohort and gender[“$1,750-$1,999” ,Gender!]) income distribution by income cohort[“$2,000-$2,999”]= sum(income distribution fractions by income cohort and gender[“$2,000-$2,999” ,Gender!]) income distribution by income cohort[“$3,000 or more”]= sum(income distribution fractions by income cohort and gender[“$3,000 or more” ,Gender!]) Units: Dmnl</p>
-<p>income distribution fractions by income cohort and gender[Negative,Gender]= 0.006, 0.0022 income distribution fractions by income cohort and gender[Nil,Gender]= 0.0105, 0.009 income distribution fractions by income cohort and gender[“$1-$149”,Gender] = 0.0224, 0.0269 income distribution fractions by income cohort and gender[“$150-$299”,Gender ]= 0.0284, 0.0396 income distribution fractions by income cohort and gender[“$300-$399”,Gender ]= 0.0366, 0.0403 income distribution fractions by income cohort and gender[“$400-$499”,Gender ]= 0.0448, 0.0612 income distribution fractions by income cohort and gender[“$500-$649”,Gender ]= 0.0523, 0.0717 income distribution fractions by income cohort and gender[“$650-$799”,Gender ]= 0.0605, 0.0695 income distribution fractions by income cohort and gender[“$800-$999”,Gender ]= 0.0859, 0.0471 income distribution fractions by income cohort and gender[“$1,000-$1,249”,Gender ]= 0.0799, 0.0381 income distribution fractions by income cohort and gender[“$1,250-$1,499”,Gender ]= 0.0276, 0.0224 income distribution fractions by income cohort and gender[“$1,500-$1,749”,Gender ]= 0.0246, 0.0261 income distribution fractions by income cohort and gender[“$1,750-$1,999”,Gender ]= 0.0202, 0.003 income distribution fractions by income cohort and gender[“$2,000-$2,999”,Gender ]= 0.0194, 0.0105 income distribution fractions by income cohort and gender[“$3,000 or more”, Gender]= 0.0112, 0.0075 Units: Dmnl Weekly income</p>
-<p>inequality indicator= (disability fraction+households without internet access fraction+normalised intergenerational inequality youth at risk + normalised poverty line+normalised travel inequality+normalised unemployed +normalised housing stress)/7 Units: Dmnl Arithmetic mean</p>
-<p>intergenerational risk factor= 1.8 Units: structure/people Cobb-Clark et al 2017 estimate it is 1.8 times more likely for children of parents receivng long-term welfare to receive welfare themselves <a href="http://ftp.iza.org/dp11070.pdf" class="uri">http://ftp.iza.org/dp11070.pdf</a></p>
+<div id="disability-fraction" class="section level3">
+<h3>disability fraction</h3>
+<p>Type: Constant<br />
+Formula: 0.177<br />
+Units: Dmnl<br />
+Assumptions: Data obtained from <a href="Percentage%20of%20population%20who%20have%20a%20disability">https://www.abs.gov.au/statistics/health/disability/disability-ageing-and-carers-australia-summary-findings/2018</a></p>
+</div>
+<div id="households-without-internet-access-fraction" class="section level3">
+<h3>households without internet access fraction</h3>
+<p>Type: Auxiliary<br />
+Formula: 1-households with internet access fraction<br />
+Units: Dmnl<br />
+Assumptions: 1 minus the fraction of those with internet access (from Telecommunications)</p>
+</div>
+<div id="income-distribution-by-income-cohort" class="section level3">
+<h3>income distribution by income cohort</h3>
+<p>Type: Auxiliary Formula: sum(income distribution fractions by income cohort and gender)<br />
+Units: Dmnl<br />
+Assumptions: This variable is split (subscripted) across 15 income cohorts (negative, nil, $1-$149, $150-$299, $300-$399, $400-$499, $500-$649, $650-$799, $800-$999, $1,000-$1,249, $1,250-$1,499, $1,250-$1,499, $1,750-$1,999, $2,000-$2,999, $3,000 or more) and summed over the two gender categories</p>
+</div>
+<div id="income-distribution-fractions-by-income-cohort-and-gender" class="section level3">
+<h3>income distribution fractions by income cohort and gender</h3>
+<p>Type: Constant<br />
+Formula: [Negative; M,F] = 0.006, 0.0022<br />
+[Nil; M,F] = 0.0105, 0.009<br />
+[“$1-$149”; M,F] = 0.0224, 0.0269<br />
+[“$150-$299”; M,F] = 0.0284, 0.0396<br />
+[“$300-$399”; M,F] = 0.0366, 0.0403<br />
+[“$400-$499”; M,F] = 0.0448, 0.0612<br />
+[“$500-$649”; M,F] = 0.0523, 0.0717<br />
+[“$650-$799”; M,F] = 0.0605, 0.0695<br />
+[“$800-$999”; M,F] = 0.0859, 0.0471<br />
+[“$1,000-$1,249”; M,F] = 0.0799, 0.0381<br />
+[“$1,250-$1,499”; M,F] = 0.0276, 0.0224<br />
+[“$1,500-$1,749”; M,F] = 0.0246, 0.0261<br />
+[“$1,750-$1,999”; M,F] = 0.0202, 0.003<br />
+[“$2,000-$2,999”; M,F] = 0.0194, 0.0105<br />
+[“$3,000 or more”; M,F] = 0.0112, 0.0075<br />
+Units: Dmnl<br />
+Assumptions: Data from 2016 census, for weekly income. Disaggregated by gender - ABS only uses male and female for gender so is not comprehensive. Formulas above list [male, female]. See Github for data.</p>
+</div>
+<div id="inequality-indicator" class="section level3">
+<h3>inequality indicator</h3>
+<p>Type: Auxiliary<br />
+Formula: (disability fraction + households without internet access fraction + normalised intergenerational inequality youth at risk +normalised poverty line + normalised travel inequality + normalised unemployed + normalised housing stress) / 7<br />
+Units: Dmnl<br />
+Assumptions: Arithmetic mean of normalised input variables</p>
+</div>
+<div id="intergenerational-risk-factor" class="section level3">
+<h3>intergenerational risk factor</h3>
+<pre><code>1.8</code></pre>
+<p>Units: structure/people Cobb-Clark et al 2017 estimate it is 1.8 times more likely for children of parents receivng long-term welfare to receive welfare themselves <a href="http://ftp.iza.org/dp11070.pdf" class="uri">http://ftp.iza.org/dp11070.pdf</a></p>
 <p>labour force[Male]= residents in paid work[Male] + unemployed residents[Male] labour force[Female]= residents in paid work[Female]+unemployed residents[Female] Units: people</p>
 <p>normalised housing stress= (number of households under mortgage stress + number of households under rent stress )/Residential Housing Units: Dmnl</p>
 <p>normalised intergenerational inequality youth at risk= number of young people at risk for intergenerational inequality/“0-14” Units: Dmnl</p>
@@ -231,6 +271,7 @@ Units: people</code></pre>
 <p>“unemployment (agriculture)”= IF THEN ELSE(“labour demand (agriculture)”&lt;labour input ag, labour input ag -“labour demand (agriculture)”, 0) Units: job/Year</p>
 <p>“unemployment (other)”= IF THEN ELSE(“labour demand (other)”&lt;labour input other, labour input other -“labour demand (other)”, 0) Units: job/Year</p>
 <p>“unemployment (tourism)”= IF THEN ELSE(“labour demand (tourism)”&lt;labour input tourism, labour input tourism -“labour demand (tourism)”, 0) Units: job/Year</p>
+</div>
 </div>
 </div>
 

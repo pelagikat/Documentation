@@ -1,7 +1,7 @@
 ---
 title: "Health and wellbeing component documentation"
 author: "Katrina Szetey"
-date: "20/05/2021"
+date: "02/02/2022"
 output: html_document
 ---
 
@@ -37,22 +37,26 @@ People experiencing income inequality have poorer health outcomes (social gradie
 ```{r, echo = FALSE, warning = FALSE}
 library(DiagrammeR)
 
+grViz("
+digraph {
+  graph[layout = dot, rankdir = LR]
+  node[shape = box, fontname = Arial]
+  'Safer healthier people'; 'Vulnerable people'
 
-mermaid("
-graph LR
-A(Biodiversity-->D{Safer healthier people}  
-B(Higher income)-->D{Safer healthier people}  
-C(Bushfire safety)-->D{Safer healthier people} 
-E(Water quality)-->F{Vulnerable people}
-G(Wastewater disease burden)-->F{Vulnerable people}
-H(Healthcare access)-->F{Vulnerable people}
-I(Climate risk)-->F{Vulnerable people}
-J(Lower income)-->F{Vulnerable people}
-K(Road accidents)-->F{Vulnerable people}
-L(Disability)-->F{Vulnerable people}
+  node[shape = oval, fontname = Arial]
+  'Biodiversity'; 'Higher income'; 'Bushfire safety'; 'Water quality'; 'Wastewater disease burden';
+  'Healthcare access'; 'Climate risk'; 'Lower income'; 'Road accidents'; 'Disability'
 
-        ")
-
+  # edge statements
+  'Safer healthier people'->'Vulnerable people' 'Vulnerable people'->'Safer healthier people'
+  'Wastewater disease burden'->'Vulnerable people' 'Healthcare access'->'Vulnerable people'
+  'Climate risk'->'Vulnerable people' 'Lower income'->'Vulnerable people' 'Road accidents'->'Vulnerable people'
+  'Disability'->'Vulnerable people' 'Water quality'->'Vulnerable people'
+   'Biodiversity'->'Safer healthier people' 'Higher income'->'Safer healthier people'
+  'Bushfire safety'->'Safer healthier people'
+ 
+}
+")
 ```
 
 

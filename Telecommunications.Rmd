@@ -1,7 +1,7 @@
 ---
 title: "Telecommunications component documentation"
 author: "Katrina Szetey"
-date last updated: "21/07/2021"
+date last updated: "02/02/2022"
 output: html_document
 ---
 
@@ -17,6 +17,30 @@ The NBN has been rolled out in Forrest, but the service can be poor. NBN Fixed W
 ## *System conceptualisation*
 
 We are only considering Fixed Wireless NBN in our model. we wish to explore how internet demand, infrastructure (in the form of Fixed Wireless towers) and internet capacity interact in Forrest. There are a number of assumptions made on limited data for some of these variables as much of the information underlying the NBN is commercial-in-confidence.
+
+### Conceptual model
+```{r, echo = FALSE, warning = FALSE}
+library(DiagrammeR)
+
+grViz("
+digraph {
+  graph[layout = dot, rankdir = TB]
+  node[shape = box, fontname = Arial]
+  'Internet service demand'; 'Fixed wireless towers'; 'Internet service capacity'
+
+  node[shape = oval, fontname = Arial]
+  'Business demand'; 'Residential demand'
+
+  # edge statements
+  'Business demand'->'Internet service demand' 'Residential demand'->'Internet service demand'
+  'Internet service capacity'->'Internet service demand' 'Internet service demand'->'Fixed wireless towers'
+  'Fixed wireless towers'->'Internet service capacity'
+ 
+}
+")
+
+```
+
 
 
 ## *Model formulation*
