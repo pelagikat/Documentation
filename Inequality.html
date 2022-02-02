@@ -66,6 +66,28 @@ if (window.hljs) {
 
 
 
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 
 
@@ -192,8 +214,8 @@ pre code {
 <p>The inequality system is by nature both difficult to measure and multifaceted. To gauge the level of inequality in the Forrest system, we identified a range of contributing factors and normalised them, then took the arithmetic mean to arrive an an indicator value.</p>
 <div id="conceptual-model" class="section level3">
 <h3>Conceptual model</h3>
-<div id="htmlwidget-3ef8ff75864bd7b940b1" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-3ef8ff75864bd7b940b1">{"x":{"diagram":"\ngraph LR\nA(Intergenerational inequality)-->D(Inequality indicator)  \nB(Internet access)-->D(Inequality indicator) \nC(Unemployment)-->D(Inequality indicator)\nE(Poverty)-->D(Inequality indicator)\nF(Disability)-->D(Inequality indicator)\nG(Housing stress)-->D(Inequality indicator)\nH(Travel inequality)-->D(Inequality indicator)\n        "},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a20b7e0a0d1f198d8bcc" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a20b7e0a0d1f198d8bcc">{"x":{"diagram":"\ngraph LR\nA(Intergenerational inequality)-->D(Inequality indicator)  \nB(Internet access)-->D(Inequality indicator) \nC(Unemployment)-->D(Inequality indicator)\nE(Poverty)-->D(Inequality indicator)\nF(Disability)-->D(Inequality indicator)\nG(Housing stress)-->D(Inequality indicator)\nH(Travel inequality)-->D(Inequality indicator)\n        "},"evals":[],"jsHooks":[]}</script>
 <p>Data are available at <a href="https://github.com/pelagikat/Local-SDGs-systems-model">https://github.com/pelagikat/Local-SDGs-systems-model</a></p>
 <hr />
 </div>
@@ -250,27 +272,96 @@ Assumptions: Arithmetic mean of normalised input variables</p>
 </div>
 <div id="intergenerational-risk-factor" class="section level3">
 <h3>intergenerational risk factor</h3>
-<pre><code>1.8</code></pre>
-<p>Units: structure/people Cobb-Clark et al 2017 estimate it is 1.8 times more likely for children of parents receivng long-term welfare to receive welfare themselves <a href="http://ftp.iza.org/dp11070.pdf" class="uri">http://ftp.iza.org/dp11070.pdf</a></p>
-<p>labour force[Male]= residents in paid work[Male] + unemployed residents[Male] labour force[Female]= residents in paid work[Female]+unemployed residents[Female] Units: people</p>
-<p>normalised housing stress= (number of households under mortgage stress + number of households under rent stress )/Residential Housing Units: Dmnl</p>
-<p>normalised intergenerational inequality youth at risk= number of young people at risk for intergenerational inequality/“0-14” Units: Dmnl</p>
-<p>normalised poverty line= sum of people below poverty line/total population Units: Dmnl</p>
-<p>normalised travel inequality= 1-(bus frequency/bus frequency required for travel equity) Units: Dmnl</p>
-<p>normalised unemployed= (number of unemployed people/total population)*normalised unemployed unit conversion Units: Dmnl</p>
-<p>normalised unemployed unit conversion= 1 Units: Year*people/job</p>
-<p>number labour force in income bracket[Income,Gender]= INTEGER(income distribution fractions by income cohort and gender[Income,Gender]*labour force[Gender]) Units: people</p>
-<p>number of households under mortgage stress= sum(mortgage stress[Income!]) Units: structure</p>
-<p>number of households under rent stress= sum(rent stress[Income!]) Units: structure</p>
-<p>number of unemployed people= “unemployment (agriculture)” + “unemployment (other)” + “unemployment (tourism)” Units: job/Year</p>
-<p>number of young people at risk for intergenerational inequality= intergenerational risk factor<em>“0-14”</em>(sum of people below poverty line/Residential Housing ) Units: people</p>
-<p>number people below poverty line[poverty line ss,Gender]= number labour force in income bracket[poverty line ss,Gender] Units: people Poverty line is below first quartile ($0-399). This is in line with the ACOSS figure of $457</p>
-<p>Residential Housing= INTEG ( Residential housing allocation rate, 67) Units: structure</p>
+<p>Type: Constant<br />
+Formula: 1.8<br />
+Units: structure/people<br />
+Assumptions: <span class="citation">Cobb-Clarke et al. (2017)</span> estimate it is 1.8 times more likely for children of parents receiving long-term welfare to receive welfare themselves</p>
+</div>
+<div id="normalised-housing-stress" class="section level3">
+<h3>normalised housing stress</h3>
+<p>Type: Auxiliary<br />
+Formula: (number of households under mortgage stress + number of households under rent stress) / Residential Housing<br />
+Units: Dmnl<br />
+Assumptions: Normalisation by number of residential households</p>
+</div>
+<div id="normalised-intergenerational-inequality-youth-at-risk" class="section level3">
+<h3>normalised intergenerational inequality youth at risk</h3>
+<p>Type: Auxiliary<br />
+Formula: number of young people at risk for intergenerational inequality / “0-14”<br />
+Units: Dmnl<br />
+Assumptions: Normalisation by 0-14 age cohort population</p>
+</div>
+<div id="normalised-poverty-line" class="section level3">
+<h3>normalised poverty line</h3>
+<p>Type: Auxiliary<br />
+Formula: sum of people below poverty line / total population<br />
+Units: Dmnl<br />
+Assumptions: Normalisation by total population</p>
+</div>
+<div id="normalised-travel-inequality" class="section level3">
+<h3>normalised travel inequality</h3>
+<p>Type: Auxiliary<br />
+Formula: 1- (bus frequency / bus frequency required for travel equity)<br />
+Units: Dmnl<br />
+Assumptions: Normalisation by bus frequency and subtract result from 1 to obtain inequality instead of equity.</p>
+</div>
+<div id="normalised-unemployed" class="section level3">
+<h3>normalised unemployed</h3>
+<p>Type: Auxiliary<br />
+Formula: (number of unemployed people / total population) * normalised unemployed unit conversion<br />
+Units: Dmnl<br />
+Assumptions: normalisation by total population</p>
+</div>
+<div id="normalised-unemployed-unit-conversion" class="section level3">
+<h3>normalised unemployed unit conversion</h3>
+<p>Type: Auxiliary<br />
+Formula: 1<br />
+Units: Year*people/job<br />
+Assumptions: Unit conversion to force all input units to dimensionless</p>
+</div>
+<div id="number-labour-force-in-income-bracket" class="section level3">
+<h3>number labour force in income bracket</h3>
+<p>Type: Auxiliary<br />
+Formula: INTEGER ( income distribution fractions by income cohort and gender * labour force)<br />
+Units: people<br />
+Assumptions: Summed over all income cohorts and genders</p>
+</div>
+<div id="number-of-unemployed-people" class="section level3">
+<h3>number of unemployed people</h3>
+<p>Type: Auxiliary<br />
+Formula: “unemployment (agriculture)” + “unemployment (other)” + “unemployment (tourism)”<br />
+Units: job/Year<br />
+Assumptions:</p>
+</div>
+<div id="number-of-young-people-at-risk-for-intergenerational-inequality" class="section level3">
+<h3>number of young people at risk for intergenerational inequality</h3>
+<p>Type: Auxiliary<br />
+Formula: intergenerational risk factor * “0-14” * (sum of people below poverty line / Residential Housing)<br />
+Units: people<br />
+Assumptions: Multiply risk factor by proportion of total households below poverty line by youth cohort</p>
+</div>
+<div id="number-people-below-poverty-line" class="section level3">
+<h3>number people below poverty line</h3>
+<p>Type: Auxiliary<br />
+Formula: number labour force in income bracket<br />
+Units: people<br />
+Assumptions: Poverty line is below first quartile ($0 - $399). This is in line with the ACOSS figure of $457 (<span class="citation">ACOSS (2020)</span>). Summed over income cohorts from Negative to $300 - $399.</p>
 <p>sum of people below poverty line= sum(number people below poverty line[poverty line ss!,Gender!]) Units: people</p>
 <p>total population= “0-14” + “15-64” + “65+” Units: people</p>
-<p>“unemployment (agriculture)”= IF THEN ELSE(“labour demand (agriculture)”&lt;labour input ag, labour input ag -“labour demand (agriculture)”, 0) Units: job/Year</p>
-<p>“unemployment (other)”= IF THEN ELSE(“labour demand (other)”&lt;labour input other, labour input other -“labour demand (other)”, 0) Units: job/Year</p>
-<p>“unemployment (tourism)”= IF THEN ELSE(“labour demand (tourism)”&lt;labour input tourism, labour input tourism -“labour demand (tourism)”, 0) Units: job/Year</p>
+<p>“unemployment (agriculture)”= IF THEN ELSE(“labour demand (agriculture)”&lt;labour input ag, labour input ag -“labour demand (agriculture),” 0) Units: job/Year</p>
+<p>“unemployment (other)”= IF THEN ELSE(“labour demand (other)”&lt;labour input other, labour input other -“labour demand (other),” 0) Units: job/Year</p>
+<p>“unemployment (tourism)”= IF THEN ELSE(“labour demand (tourism)”&lt;labour input tourism, labour input tourism -“labour demand (tourism),” 0) Units: job/Year</p>
+</div>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-acoss_poverty_2020" class="csl-entry">
+ACOSS. 2020. <span>“Poverty in <span>Australia</span> 2020: <span>Part</span> 1 <span>Overview</span>.”</span> NSW, Australia: ACOSS; UNSW. <a href="https://povertyandinequality.acoss.org.au/wp-content/uploads/2020/02/Poverty-in-Australia-2020_Part-1_Overview.pdf">https://povertyandinequality.acoss.org.au/wp-content/uploads/2020/02/Poverty-in-Australia-2020_Part-1_Overview.pdf</a>.
+</div>
+<div id="ref-cobb-clarke_intergenerational_2017" class="csl-entry">
+Cobb-Clarke, Deborah A., Sarah C. Dahmann, Nicolas Salamanca, and Anna Zhu. 2017. <span>“Intergenerational <span>Disadvantage</span>: <span>Learning</span> about <span>Equal</span> <span>Opportunity</span> from <span>Social</span> <span>Assistance</span> <span>Receipt</span>.”</span> Discussion {Paper} IZA DP No. 11070. Bonn, Germany: IZA Institute of Labor Economics. <a href="http://ftp.iza.org/dp11070.pdf">http://ftp.iza.org/dp11070.pdf</a>.
 </div>
 </div>
 </div>

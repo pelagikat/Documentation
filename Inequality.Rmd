@@ -115,76 +115,68 @@ Formula: number of young people at risk for intergenerational inequality / "0-14
 Units: Dmnl  
 Assumptions: Normalisation by 0-14 age cohort population  
 
-normalised poverty line=
-    sum of people below poverty line/total population
-Units: Dmnl
+### normalised poverty line  
 
-normalised travel inequality=
-    1-(bus frequency/bus frequency required for travel equity)
-Units: Dmnl
+Type: Auxiliary  
+Formula: sum of people below poverty line / total population  
+Units: Dmnl  
+Assumptions: Normalisation by total population  
 
-normalised unemployed=
-    (number of unemployed people/total population)*normalised unemployed unit conversion
-Units: Dmnl
+### normalised travel inequality
 
-normalised unemployed unit conversion=
-    1
-Units: Year*people/job
+Type: Auxiliary  
+Formula: 1- (bus frequency / bus frequency required for travel equity)  
+Units: Dmnl  
+Assumptions: Normalisation by bus frequency and subtract result from 1 to obtain inequality instead of equity.  
 
-number labour force in income bracket[Income,Gender]=
-    INTEGER(income distribution fractions by income cohort and gender[Income,Gender
-]*labour force[Gender])
-Units: people
+### normalised unemployed  
 
-number of households under mortgage stress=
-    sum(mortgage stress[Income!])
-Units: structure
+Type: Auxiliary  
+Formula: (number of unemployed people / total population) * normalised unemployed unit conversion  
+Units: Dmnl  
+Assumptions: normalisation by total population  
 
-number of households under rent stress=
-    sum(rent stress[Income!])
-Units: structure
+### normalised unemployed unit conversion  
 
-number of unemployed people=
-    "unemployment (agriculture)" + "unemployment (other)" + "unemployment (tourism)"
-Units: job/Year
+Type: Auxiliary  
+Formula: 1  
+Units: Year*people/job  
+Assumptions: Unit conversion to force all input units to dimensionless  
 
-number of young people at risk for intergenerational inequality=
-    intergenerational risk factor*"0-14"*(sum of people below poverty line/Residential Housing
-)
-Units: people
+### number labour force in income bracket  
 
-number people below poverty line[poverty line ss,Gender]=
-    number labour force in income bracket[poverty line ss,Gender]
-Units: people
-Poverty line is below first quartile ($0-399). This is in line 
-        with the ACOSS figure of $457
+Type: Auxiliary  
+Formula: INTEGER ( income distribution fractions by income cohort and gender * labour force)  
+Units: people  
+Assumptions: Summed over all income cohorts and genders  
 
-Residential Housing= INTEG (
-    Residential housing allocation rate,
-        67)
-Units: structure
+### number of unemployed people  
 
-sum of people below poverty line=
-    sum(number people below poverty line[poverty line ss!,Gender!])
-Units: people
+Type: Auxiliary  
+Formula: "unemployment (agriculture)" + "unemployment (other)" + "unemployment (tourism)"  
+Units: job/Year  
+Assumptions: 
 
-total population=
-    "0-14" + "15-64" + "65+"
-Units: people
+### number of young people at risk for intergenerational inequality  
 
-"unemployment (agriculture)"=
-    IF THEN ELSE("labour demand (agriculture)"<labour input ag, labour input ag
--"labour demand (agriculture)", 0)
-Units: job/Year
+Type: Auxiliary  
+Formula: intergenerational risk factor * "0-14" * (sum of people below poverty line / Residential Housing)  
+Units: people  
+Assumptions: Multiply risk factor by proportion of total households below poverty line by youth cohort  
 
-"unemployment (other)"=
-    IF THEN ELSE("labour demand (other)"<labour input other, labour input other
--"labour demand (other)", 0)
-Units: job/Year
+### number people below poverty line  
 
-"unemployment (tourism)"=
-    IF THEN ELSE("labour demand (tourism)"<labour input tourism, labour input tourism
--"labour demand (tourism)", 0)
-Units: job/Year
+Type: Auxiliary  
+Formula: number labour force in income bracket  
+Units: people  
+Assumptions: Poverty line is below first quartile ($0 - $399). This is in line with the ACOSS figure of $457 (@acoss_poverty_2020). Excludes income cohorts above $300-$399.  
+
+### sum of people below poverty line  
+
+Type: Auxiliary  
+Formula: sum ( number people below poverty line [poverty line ss!,Gender!] )  
+Units: people  
+Assumptions: Summed over income cohorts from Negative to $300-$399 and genders  
+
 
 # References
