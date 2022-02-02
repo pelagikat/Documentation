@@ -36,6 +36,10 @@ Climate change is also predicted to increase flooding due to more intense rain e
 ## *Model formulation*
 
 
+## Abbreviations
+
+FFDI = Forest Fire Danger Index 
+
 ***
 
 ## *Equations*

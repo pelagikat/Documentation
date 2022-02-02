@@ -19,7 +19,6 @@ Intergenerational inequality is only one factor. Other contributing factors are 
 ## *System conceptualisation and model formulation*
 The inequality system is by nature both difficult to measure and multifaceted. To gauge the level of inequality in the Forrest system, we identified a range of contributing factors and normalised them, then took the arithmetic mean to arrive an an indicator value.
 
-
 ### Conceptual model
 ```{r, echo = FALSE, warning = FALSE}
 library(DiagrammeR)

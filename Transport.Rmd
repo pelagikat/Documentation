@@ -23,6 +23,29 @@ There is poor public transport service from Forrest to Colac or Birregurra. One 
 
 ## *System conceptualisation*
 
+### Conceptual model
+```{r, echo = FALSE, warning = FALSE}
+library(DiagrammeR)
+
+grViz("
+digraph {
+  graph[layout = dot, rankdir = TB]
+  node[shape = box, fontname = Arial]
+  'Road quality'
+
+  node[shape = oval, fontname = Arial]
+  'Flooding'; 'Maintenance'; 'Age'; 'Load'; 'Car use'; 'Bus trips'; 'Bus frequency'; 'Travel equity'; 
+  'People with reduced mobility'; 'Potential bus demand'; 'Population'; 'Bus shortfall'
+
+  # edge statements
+  'Flooding'->'Road quality' 'Maintenance'->'Road quality' 'Age'->'Road quality' 'Load'->'Road quality'
+  'Bus trips'->'Load' 'Car use'->'Load' 'Bus frequency'->'Bus trips' 'Bus frequency'->'Travel equity'
+  'People with reduced mobility'->'Travel equity' 'Bus frequency'->'Bus shortfall' 
+  'Potential bus demand'->'Bus shortfall' 'Population'->'Potential bus demand' 'Bus shortfall'->'Travel equity'
+ 
+}
+")
+```
 
 
 ## *Model formulation*

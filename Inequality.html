@@ -214,8 +214,8 @@ pre code {
 <p>The inequality system is by nature both difficult to measure and multifaceted. To gauge the level of inequality in the Forrest system, we identified a range of contributing factors and normalised them, then took the arithmetic mean to arrive an an indicator value.</p>
 <div id="conceptual-model" class="section level3">
 <h3>Conceptual model</h3>
-<div id="htmlwidget-a20b7e0a0d1f198d8bcc" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-a20b7e0a0d1f198d8bcc">{"x":{"diagram":"\ngraph LR\nA(Intergenerational inequality)-->D(Inequality indicator)  \nB(Internet access)-->D(Inequality indicator) \nC(Unemployment)-->D(Inequality indicator)\nE(Poverty)-->D(Inequality indicator)\nF(Disability)-->D(Inequality indicator)\nG(Housing stress)-->D(Inequality indicator)\nH(Travel inequality)-->D(Inequality indicator)\n        "},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-cf101bda58da8d5ef823" style="width:672px;height:480px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-cf101bda58da8d5ef823">{"x":{"diagram":"\ngraph LR\nA(Intergenerational inequality)-->D(Inequality indicator)  \nB(Internet access)-->D(Inequality indicator) \nC(Unemployment)-->D(Inequality indicator)\nE(Poverty)-->D(Inequality indicator)\nF(Disability)-->D(Inequality indicator)\nG(Housing stress)-->D(Inequality indicator)\nH(Travel inequality)-->D(Inequality indicator)\n        "},"evals":[],"jsHooks":[]}</script>
 <p>Data are available at <a href="https://github.com/pelagikat/Local-SDGs-systems-model">https://github.com/pelagikat/Local-SDGs-systems-model</a></p>
 <hr />
 </div>
@@ -345,12 +345,14 @@ Assumptions: Multiply risk factor by proportion of total households below povert
 <p>Type: Auxiliary<br />
 Formula: number labour force in income bracket<br />
 Units: people<br />
-Assumptions: Poverty line is below first quartile ($0 - $399). This is in line with the ACOSS figure of $457 (<span class="citation">ACOSS (2020)</span>). Summed over income cohorts from Negative to $300 - $399.</p>
-<p>sum of people below poverty line= sum(number people below poverty line[poverty line ss!,Gender!]) Units: people</p>
-<p>total population= “0-14” + “15-64” + “65+” Units: people</p>
-<p>“unemployment (agriculture)”= IF THEN ELSE(“labour demand (agriculture)”&lt;labour input ag, labour input ag -“labour demand (agriculture),” 0) Units: job/Year</p>
-<p>“unemployment (other)”= IF THEN ELSE(“labour demand (other)”&lt;labour input other, labour input other -“labour demand (other),” 0) Units: job/Year</p>
-<p>“unemployment (tourism)”= IF THEN ELSE(“labour demand (tourism)”&lt;labour input tourism, labour input tourism -“labour demand (tourism),” 0) Units: job/Year</p>
+Assumptions: Poverty line is below first quartile ($0 - $399). This is in line with the ACOSS figure of $457 (<span class="citation">ACOSS (2020)</span>). Excludes income cohorts above $300-$399.</p>
+</div>
+<div id="sum-of-people-below-poverty-line" class="section level3">
+<h3>sum of people below poverty line</h3>
+<p>Type: Auxiliary<br />
+Formula: sum ( number people below poverty line [poverty line ss!,Gender!] )<br />
+Units: people<br />
+Assumptions: Summed over income cohorts from Negative to $300-$399 and genders</p>
 </div>
 </div>
 </div>

@@ -63,6 +63,14 @@ digraph {
 ## *Model formulation*
 
 
+
+### Abbreviations used:
+
+CFA = Country Fire Authority (regional fire service)  
+GTOC = Gateway to the Otways Centre (bushfire safer place)  
+MTB = Mountain Bike (e.g., MTB Trails = Mountain Bike Trails)  
+
+
 ***
 
 ## *Equations*

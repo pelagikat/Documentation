@@ -76,7 +76,6 @@ L{65+}-->M[Deaths]
 ```
 
 
-
 ## *Model formulation*
 
 The structure of this model component was based upon the model by @navarro_rusem_2019. Additional structure was added to incorporate the local school model within this component, and for the different effects on migration rate.

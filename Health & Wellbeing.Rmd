@@ -2,6 +2,7 @@
 title: "Health and wellbeing component documentation"
 author: "Katrina Szetey"
 date: "02/02/2022"
+bibliography: health.bib
 output: html_document
 ---
 
@@ -32,6 +33,8 @@ People experiencing income inequality have poorer health outcomes (social gradie
 
 ## *System conceptualisation*
 
+This component was inspired by the work of @homer_system_2006, and seeks to model local scale population health contributors. The community clearly identified positive and negative impacts on health and wellbeing, many of which are modelled in other components in the local SDG systems model.
+
 
 ### Conceptual model
 ```{r, echo = FALSE, warning = FALSE}
@@ -59,183 +62,172 @@ digraph {
 ")
 ```
 
-
-
-
 ## *Model formulation*
 
+Following the model in Figure 3 of @homer_system_2006, this component models "Safer healthier people" and "Vulnerable people" as stocks, and these form a cycle with flow variables. The various different health impacts (normalised where required) are multiplied together in the flow variables and this creates the dynamics of the model component.
+
+## Data sources
+
+Data are available at [https://github.com/pelagikat/Local-SDGs-systems-model](https://github.com/pelagikat/Local-SDGs-systems-model)
+
+Data was obtained from the [Victorian Government DATA VIC](https://discover.data.vic.gov.au/dataset/crash-stats-data-extract) for road accident statistics.
+
+Census data for Forrest available [here.](https://www.abs.gov.au/websitedbs/D3310114.nsf/Home/2016%20QuickStats) Data for Forrest as a distinct location is only available for 2006, 2011 and 2016 censuses.
+
+## Abbreviations
+GTOC = Gateway to the Otways Centre, a Bushfire Safer Place  
+WHO = World Health Organisation  
+WW = Wastewater, new local wastewater infrastructure  
 
 *** 
 
 ## *Equations*
 
-accident coefficient=
-        -19.25
-    Units: people
-    Calibrated
+### accident coefficient
 
-Becoming safer and healthier=
-    (increasing bushfire safety from GTOC*(biodiversity impact on health*
-    (middle and high income population/total population)*
-    total population)/
-    Time)
-Units: people/Year
+Type: Constant  
+Formula: -19.25  
+Units: people  
+Assumptions: Calibrated against road accident data. See Github for data.  
 
-Becoming vulnerable=
-    ((climate risk*
-    disability fraction*
-    water quality*
-    disease from wastewater*
-    excess disease burden from lowered healthcare access*
-    (low income population/total population)*
-    (road accidents/total population))*
-    total population)/
-    Time
-Units: people/Year
+### Becoming safer and healthier  
 
-biodiversity impact on health=
-    Species richness/INIT species richness
-Units: Dmnl
+Type: Auxiliary  
+Formula: (increasing bushfire safety from GTOC * ( biodiversity impact on health (middle and high income population / total population) * total population) / Time)  
+Units: people/Year  
+Assumptions:  
 
-bushfire risk fraction=
-    reference FFDI/FFDI model
-Units: Dmnl
+### Becoming vulnerable  
 
-climate damage fraction=
-    1/(1+climate damage scale*(temperature change since 1865/reference temperature for climate damages
-)^climate damage nonlinearity)
-Units: Dmnl
-Fraction of Output lost to combating Climate Change.
+Type: Auxiliary  
+Formula: (( climate risk * disability fraction * water quality * disease from wastewater * excess disease burden from lowered healthcare access * (low income population / total population) * (road accidents / total population)) * total population) / Time  
+Units: people/Year  
+Assumptions: 
 
-climate risk=
-    risk to health from bushfire*risk to health from increasing temperatures
-Units: Dmnl
+### biodiversity impact on health  
 
-disability fraction=
-    0.177
-Units: Dmnl
-https://www.abs.gov.au/statistics/health/disability/disability-ag
-        eing-and-carers-australia-summary-findings/2018 Percentage of 
-        population who have a disability
+Type: Auxiliary  
+Formula: Species richness / INIT species richness  
+Units: Dmnl  
+Assumptions: Current species richness as a proportion of the baseline species richness  
 
-disease burden before WW=
-    0.1
-Units: Year/person
-Data from Forrest Wastewater Investigation report
+### climate risk  
 
-disease from wastewater=
-    (IF THEN ELSE(Wastewater availability > 0, WHO target disease burden/WHO target disease burden
-, disease burden before WW/WHO target disease burden))
-Units: Dmnl
-Effect of installing new wastewater infrastructure as a 
-        proportion of the WHO target.
+Type: Auxiliary  
+Formula: risk to health from bushfire * risk to health from increasing temperatures  
+Units: Dmnl  
+Assumptions: the main risks to health as a result of climate are bushfire and high temperature  
 
-excess disease burden from lowered healthcare access=
-    1.103
-Units: fraction
-Forrest is classified as inner regional by the RRMA 
-        classification 
-        https://www.health.gov.au/health-topics/health-workforce/health-w
-        orkforce-classifications/rural-remote-and-metropolitan-area 
-        Inner regional areas have 10.3% excess disease burden compared 
-        to major cities (percentage of total observed burden for the 
-        area). 
-        https://www.aihw.gov.au/getmedia/c076f42f-61ea-4348-9c0a-d996353e
-        838f/aihw-bod-22.pdf.aspx?inline=true Table 8.5
+### disease burden before WW  
 
-GTOC availability=
-    IF THEN ELSE(time at which GTOC is complete>0, STEP(1, (Current time + time at which GTOC is complete
-)) , 0 )
-Units: Year
+Type: Constant  
+Formula: 0.1  
+Units: Year/person  
+Assumptions: Wastewater investigation report in Forrest (@decentralised_water_consulting_forrest_2019, p. 28) found that the existing disease burden was approximately $1 \times 10^{-1}$ (or 0.1) Disability Adjusted Life Years (DALYs). Note the @decentralised_water_consulting_forrest_2019 report calls this "Level of Disease Protection" instead of disease burden, and appears to incorrectly interpret Figure 12 in the text.  
 
-high income population=
-    sum(number labour force in income bracket[high income!,Gender!])
-Units: people
+### disease from wastewater  
 
-increasing bushfire safety from GTOC=
-    IF THEN ELSE(GTOC availability>0, 1-bushfire risk fraction, 1)
-Units: Dmnl
+Type: Auxiliary  
+Formula: (IF THEN ELSE ( Wastewater availability > 0, WHO target disease burden / WHO target disease burden, disease burden before WW / WHO target disease burden))  
+Units: Dmnl  
+Assumptions: Effect of installing new wastewater infrastructure as a proportion of the WHO target.  
 
-INIT species richness=
-    4637
-Units: species
-Baseline 1990 data for species richness in the Colac Otway LGA 
-        area. Includes amphibians, birds, mammals, plants and reptiles.
+### excess disease burden from lowered healthcare access  
 
-low income population=
-    sum(number labour force in income bracket[low income!, Gender!])
-Units: people
+Type: Constant  
+Formula: 1.103  
+Units: fraction  
+Assumptions: Forrest is classified as inner regional by the [RRMA classification](https://www.health.gov.au/health-topics/health-workforce/health-workforce-classifications/rural-remote-and-metropolitan-area). Inner regional areas have 10.3% excess disease burden compared to major cities (percentage of total observed burden for the area) (@australian_institute_of_health_and_welfare_australian_2019, Table 8.5)  
 
-middle and high income population=
-    high income population+middle income population
-Units: people
+### high income population  
 
-middle income population=
-    sum(number labour force in income bracket[mid income!,Gender!])
-Units: people
+Type: Auxiliary 
+Formula: sum ( number labour force in income bracket[high income!,Gender!])  
+Units: people  
+Assumptions: Summed over income cohorts $1,500 and above, and summed over gender  
 
-number labour force in income bracket[Income,Gender]=
-    INTEGER(income distribution fractions by income cohort and gender[Income,Gender
-]*labour force[Gender])
-Units: people
+### increasing bushfire safety from GTOC  
 
-population initial=
-    231
-Units: people
-From 2016 Census data
+Type: Auxiliary 
+Formula: IF THEN ELSE ( GTOC availability > 0, 1-bushfire risk fraction, 1)  
+Units: Dmnl  
+Assumptions: If GTOC has been built, its presence negates the risk from bushfire as it is a Bushfire Safer Place  
 
-risk to health from bushfire=
-    bushfire risk fraction
-Units: Dmnl
+### low income population  
 
-risk to health from increasing temperatures=
-    climate damage fraction
-Units: Dmnl
+Type: Auxiliary 
+Formula: sum ( number labour force in income bracket[low income!, Gender!])  
+Units: people  
+Assumptions: Summed over income cohorts from Negative to $649, and summed over gender.  
 
-road accidents=
-    Road Quality*accident coefficient + 9.6
-Units: people
-Intercept is dataset mean
+### middle and high income population  
 
-Road Quality= INTEG (
-    Road maintenance rate-Road deterioration rate,
-        0)
-Units: Dmnl
+Type: Auxiliary 
+Formula: high income population + middle income population  
+Units: people  
+Assumptions:   
 
-Safer Healthier People= INTEG (
-    Becoming safer and healthier-Becoming vulnerable,
-        population initial)
-Units: people
+### middle income population  
 
-Species richness= INTEG (
-    Species richness increase rate-Species richness decrease rate,
-        INIT species richness)
-Units: species
+Type: Auxiliary 
+Formula: sum ( number labour force in income bracket[mid income!,Gender!])  
+Units: people  
+Assumptions: Summed over income cohorts from $650 - $1,499, and summed over gender.  
 
-total population=
-    "0-14" + "15-64" + "65+"
-Units: people
+### population initial  
 
-Vulnerable People= INTEG (
-    Becoming vulnerable-Becoming safer and healthier,
-        0)
-Units: people
+Type: Constant  
+Formula: 231  
+Units: people  
+Assumptions: From 2016 census data.  
 
-Wastewater availability=
-    IF THEN ELSE(time at which Wastewater is complete > 0, STEP(1, (Current time
- + time at which Wastewater is complete)) , 0 )
-Units: Year
-The time from which the wastewater infrastructure is complete 
-        and can begin having an effect on other variables
+### risk to health from bushfire  
 
-water quality=
-    1
-Units: Dmnl
-Scenario variable. Baseline zero.
+Type: Auxiliary 
+Formula: bushfire risk fraction  
+Units: Dmnl  
+Assumptions: A one-to-one mapping of bushfire risk fraction  
 
-WHO target disease burden=
-    1e-05
-Units: Year/person
-The new wastewater infrastructure will meet this disease burden 
-        target
+### risk to health from increasing temperatures  
 
+Type: Auxiliary 
+Formula: climate damage fraction  
+Units: Dmnl  
+Assumptions: A one-to-one mapping of climate damage fraction  
+
+### road accidents  
+
+Type: Auxiliary 
+Formula: Road Quality * accident coefficient + 9.6  
+Units: people  
+Assumptions: Linear model calibrated in Vensim. Intercept is dataset mean.  
+
+### Safer Healthier People
+
+Type: Stock  
+Formula: INTEG (Becoming safer and healthier - Becoming vulnerable), INITIAL = population initial  
+Units: people  
+Assumptions: There are only two states of being in this model: Safer & Healthier, or Vulnerable.  
+
+Vulnerable People
+
+Type: Stock  
+Formula: INTEG (Becoming vulnerable - Becoming safer and healthier), INITIAL = 0)  
+Units: people  
+Assumptions: There are only two states of being in this model: Safer & Healthier, or Vulnerable. Assume that all the population begin as Safer & Healthier and as the simulation runs, may move to Vulnerable.  
+
+### water quality  
+
+Type: Constant  
+Formula: 1  
+Units: Dmnl  
+Assumptions: This is a scenario variable. The baseline is zero (no effect).  
+
+### WHO target disease burden  
+
+Type: Constant  
+Formula: 1e-05  
+Units: Year/person  
+Assumptions: Wastewater investigation report in Forrest (@decentralised_water_consulting_forrest_2019, p. 28) states that the World Health Organisation target disease burden from wastewater was approximately $1 \times 10^{-5}$ Disability Adjusted Life Years (DALYs). Note the @decentralised_water_consulting_forrest_2019 report calls this "Level of Disease Protection" instead of disease burden, and appears to incorrectly interpret Figure 12 in the text. The new wastewater infrastructure will meet this disease burden target.  
+
+# References

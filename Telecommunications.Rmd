@@ -16,7 +16,7 @@ The NBN has been rolled out in Forrest, but the service can be poor. NBN Fixed W
 
 ## *System conceptualisation*
 
-We are only considering Fixed Wireless NBN in our model. we wish to explore how internet demand, infrastructure (in the form of Fixed Wireless towers) and internet capacity interact in Forrest. There are a number of assumptions made on limited data for some of these variables as much of the information underlying the NBN is commercial-in-confidence.
+We are only considering Fixed Wireless NBN in our model. We wish to explore how internet demand, infrastructure (in the form of Fixed Wireless towers) and internet capacity interact in Forrest. There are a number of assumptions made on limited data for some of these variables as much of the information underlying the NBN is commercial-in-confidence.
 
 ### Conceptual model
 ```{r, echo = FALSE, warning = FALSE}
@@ -41,311 +41,169 @@ digraph {
 
 ```
 
-
-
 ## *Model formulation*
 
-There are three stocks with inflow rates forming the basis of the model: Internet Service Demand, Fixed Wireless Towers, and Internet Service Capacity. Demand is influenced by business and residential internet demand. Capacity is influenced by demand, user limits and speeds per connection. Fixed wireless towers is influenced by oversubscription of the existing infrastructure (i.e. how far the capacity exceeds the user limit). We have not modelled infrastructure funding in this case, as NBN Co is supposed to roll out upgrades according to need (although this rarely happens currently), and it is funded by the Federal Government.
+There are three stocks with inflow rates forming the basis of the model: Internet Service Demand, Fixed Wireless Towers, and Internet Service Capacity. Demand is influenced by business and residential internet demand. Capacity is influenced by demand, user limits and speeds per connection. Fixed wireless towers is influenced by oversubscription of the existing infrastructure (i.e. how far the capacity exceeds the user limit). We have not modelled infrastructure funding in this case, as NBN Co is supposed to roll out upgrades according to need (although this is intermittent currently), and it is funded by the Federal Government.
+
+## Data sources
+
+Data are available at [https://github.com/pelagikat/Local-SDGs-systems-model](https://github.com/pelagikat/Local-SDGs-systems-model) (Economic data is used in this component)
+
+Census data for Forrest available [here.](https://www.abs.gov.au/websitedbs/D3310114.nsf/Home/2016%20QuickStats) Data for Forrest as a distinct location is only available for 2006, 2011 and 2016 censuses.
+
+Data was obtained from Australian Bureau of Statistics
+[Counts of Australian Businesses](https://www.abs.gov.au/statistics/economy/business-indicators/counts-australian-businesses-including-entries-and-exits/latest-release)
+ and [Census Table Builder](https://www.abs.gov.au/websitedbs/censushome.nsf/home/tablebuilder)
 
 *** 
 
 ## *Equations*
 
-### Internet Service Demand
+### business internet demand
 
-Type: Stock  
-Formula: INTEG(Internet service demand rate), INITIAL = INIT NBN connections  
-Units: connections  
-Assumptions/data:   
-
-### INIT NBN connections
-
-Type: Auxiliary (constant)  
-Formula: 114+27  
-Units: connections  
-Assumptions/data: 77% of 148 dwellings (from 2016 ABS Census data) plus 27 businesses (from 2020 ABS counts of businesses)  
-
-### Internet service demand rate
-
-Type: Auxiliary (rate)  
-Formula: (business internet demand+residential internet demand)*demand per location/Time  
-Units: connections/Year  
+Type: Auxiliary  
+Formula: "number of businesses (agriculture)" + "number of businesses (other)" + "number of businesses (tourism)"  
+Units: structure  
 Assumptions: Assume that all businesses require a connection to the internet  
-
+    
 ### demand per location
 
 Type: Constant  
 Formula: 1  
 Units: connections/structure  
-Assumptions/data: 1 connections per location 
-
-### business internet demand
-
-Type: Auxiliary  
-Formula: "number of businesses (agriculture)"+"number of businesses (other)"+"number of businesses (tourism)"  
-Units: structure  
-Assumptions: Assume that all businesses require a connection to the internet  
-
-### residential internet demand
-
-Type: Auxiliary  
-Formula: max number of premises to connect to the internet*households with internet access fraction  
-Units: structure  
-Assumptions/data:  
-
-### households with internet access fraction
-
-Type: Constant  
-Formula: 0.77  
-Units: fraction  
-Assumptions/data: From ABS 2016 census data: 77% of households accessed the internet from their home  
-
-### max number of premises to connect to the internet
-
-Type: Constant  
-Formula: number of actual residential households+number of desired tourist houses  
-Units: structure  
-Assumptions/data:  
-
-### Fixed Wireless Towers
-
-Type: Stock  
-Formula: INTEG(INTEGER(Fixed wireless tower investment rate)), INITIAL = INIT number of towers  
-Units: tower  
-Assumptions/data:  
-
-### INIT number of towers
-
-Type: Constant  
-Formula: 1  
-Units: tower  
-Assumptions/data: There is one fixed wireless tower in Forrest  
+Assumptions: 1 connections per location  
 
 ### Fixed wireless tower investment rate
 
 Type: Auxiliary (rate)  
-Formula: tower oversubscription factor/Time  
+Formula: tower oversubscription factor / Time  
 Units: tower/Year  
-Assumptions/data:  
+Assumptions:  
 
-### tower build delay time
-
-Type: Constant  
-Formula: 2  
-Units: Year  
-Assumptions/data: Assume it takes two years to build  
-
-### tower oversubscription factor
-
-Type: Auxiliary  
-Formula: INIT number of towers+(Internet Service Demand/fixed wireless user limit)-Fixed Wireless Towers  
-Units: tower  
-Assumptions/data: Desired state of system  
-
-### Internet Service Capacity
+### Fixed Wireless Towers
 
 Type: Stock  
-Formula: INTEG(Internet service capacity rate), INITIAL = maximum speed per connection * fixed wireless user limit  
-Units: Mbps * connections/tower  
-Assumptions/data: The initial value is the maximum available capacity  
+Formula: INTEG ( INTEGER(Fixed wireless tower investment rate)), INITIAL = INIT number of towers  
+Units: tower  
+Assumptions:  
 
-### fixed wireless user limit
+### fixed wireless user limit  
 
 Type: Constant  
 Formula: 60  
 Units: connections/tower  
-Assumptions/data: This value was difficult to ascertain, however this article quoted NBN Co saying they had reduced users from historical levels of 60 per cell to an average of 19: https://www.itnews.com.au/news/nbn-co-cuts-average-number-of-users-per-wireless-cell-to-19-559707
-Based upon that, we assume 60 connections is higher than acceptable and have set that as our maximum value.
+Assumptions: This value was difficult to ascertain, however [this article](https://www.itnews.com.au/news/nbn-co-cuts-average-number-of-users-per-wireless-cell-to-19-559707) quoted NBN Co saying they had reduced users from historical levels of 60 per cell to an average of 19. Based upon that, we assume 60 connections is higher than acceptable and have set that as the maximum value.  
 
-### maximum speed per connection
+### households with internet access fraction  
 
 Type: Constant  
-Formula: 75  
-Units: Mbps  
-Assumptions/data: Fixed wireless has a maximum plan speed of 75Mbps  
+Formula: 0.77  
+Units: fraction  
+Assumptions: From ABS 2016 census data: 77% of households accessed the internet from their home  
 
-### Internet service capacity rate
+### INIT NBN connections
 
-Type: Auxiliary (rate)  
-Formula: IF THEN ELSE(tower oversubscription factor <= Fixed Wireless Towers, internet capacity discrepancy/Time, (fixed wireless user limit * maximum speed per connection)/Time)  
-Units: Mbps * connection /(Year * tower)  
-Assumptions/data: The assumption here is that if the tower oversubscription factor is less than the number of towers (i.e., there are enough towers), then the discrepancy structure will be valid. However, if there are not enough towers to meet demand, then the capacity rate will stay at its max level, which is the user limit * max speed per connection.  
+Type: Constant  
+Formula: 114 + 27  
+Units: connections  
+Assumptions: 77% of 148 dwellings (from 2016 ABS Census data) plus 27 businesses (from 2020 ABS counts of businesses). See Github for data.  
+
+### INIT number of towers  
+
+Type: Constant  
+Formula: 1  
+Units: tower  
+Assumptions: There is one fixed wireless tower in Forrest  
+
+### internet capacity demand
+
+Type: Auxiliary  
+Formula: Internet Service Demand * maximum speed per connection / Fixed Wireless Towers  
+Units: Mbps * connection/tower  
+Assumptions: This is a variable which represents the total amount of traffic demand as a proportion of number of towers.  
 
 ### internet capacity discrepancy
 
 Type: Auxiliary  
 Formula: internet capacity demand-Internet Service Capacity  
 Units: Mbps*connection/tower  
-Assumptions/data: This is the discrepancy between capacity demand and capacity actual.
+Assumptions: This is the discrepancy between capacity demand and capacity actual.  
 
-### internet capacity demand
+### Internet Service Capacity
+
+Type: Stock  
+Formula: INTEG ( Internet service capacity rate), INITIAL = maximum speed per connection * fixed wireless user limit  
+Units: Mbps * connections/tower  
+Assumptions: The initial value is the maximum available capacity  
+
+### Internet service capacity rate
 
 Type: Auxiliary  
-Formula: Internet Service Demand * maximum speed per connection/Fixed Wireless Towers  
-Units: Mbps * connection/tower  
-Assumptions/data:  
+Formula: IF THEN ELSE ( tower oversubscription factor <= Fixed Wireless Towers, internet capacity discrepancy / Time, (fixed wireless user limit * maximum speed per connection) / Time)    
+Units: Mbps * connection /(Year * tower)  
+Assumptions: If the tower oversubscription factor is less than the number of towers (i.e., there are enough towers), then the discrepancy structure will be valid. However, if there are not enough towers to meet demand, then the capacity rate will stay at its max level, which is the user limit * max speed per connection.  
+
+### Internet Service Demand
+
+Type: Stock  
+Formula: INTEG ( Internet service demand rate ), INITIAL = INIT NBN connections  
+Units: connections  
+Assumptions: 
+
+### Internet service demand rate
+
+Type: Auxiliary (rate)  
+Formula: (business internet demand + residential internet demand) * demand per location / Time  
+Units: connections/Year  
+Assumptions: Assume that all businesses require a connection to the internet  
 
 ###  internet service performance
 
 Type: Auxiliary  
-Formula: Internet Service Capacity/Internet Service Demand  
+Formula: Internet Service Capacity / Internet Service Demand  
 Units: Mbps/tower  
-Assumptions/data: This is the equivalent of a supply/demand ratio  
+Assumptions: This is the equivalent of a supply/demand ratio  
 
-***
-New stuff after here
+### max number of premises to connect to the internet
 
-business internet demand=
-        "number of businesses (agriculture)"+"number of businesses (other)"+"number of businesses (tourism)"
-    Units: structure
-    
-demand per location=
-    1
-Units: connections/structure
-1 connections per location (mostly a units fixing variable)
+Type: Constant  
+Formula: Residential Housing + Tourism Housing   
+Units: structure  
+Assumptions:  
 
-Fixed wireless tower investment rate=
-    IF THEN ELSE(tower investment responsiveness = 0, 0, tower oversubscription factor
-/tower build delay time)
-Units: tower/Year
+### maximum speed per connection
 
-Fixed Wireless Towers= INTEG (
-    INTEGER(Fixed wireless tower investment rate),
-        INIT number of towers)
-Units: tower
+Type: Constant  
+Formula: 75  
+Units: Mbps  
+Assumptions: Fixed wireless has a maximum plan speed of 75Mbps  
 
-fixed wireless user limit=
-    60
-Units: connections/tower
-This value was difficult to ascertain, however this article 
-        quoted NBN Co saying they had reduced users from historical 
-        levels of 60 per cell to an average of 19: 
-        https://www.itnews.com.au/news/nbn-co-cuts-average-number-of-user
-        s-per-wireless-cell-to-19-559707 Based upon that, we assume 60 
-        connections is higher than acceptable and have set that as our 
-        maximum value.
+### residential internet demand
 
-households with internet access fraction=
-    0.77
-Units: fraction
-From ABS data: 77% of households accessed the internet from 
-        their home
+Type: Auxiliary  
+Formula: max number of premises to connect to the internet * households with internet access fraction  
+Units: structure  
+Assumptions:  
 
-INIT NBN connections=
-    114+27
-Units: connections
-77% of 148 dwellings (from 2016 ABS Census data) Plus 27 
-        businesses (from 2020 ABS counts of businesses)
+### tower build delay time  
 
-INIT number of towers=
-    1
-Units: tower
+Type: Constant  
+Formula: 2  
+Units: Year  
+Assumptions: Assume it takes two years to build  
 
-internet capacity demand=
-    Internet Service Demand*maximum speed per connection/Fixed Wireless Towers
-Units: Mbps*connection/tower
+### tower investment responsiveness
 
-internet capacity discrepancy=
-    internet capacity demand-Internet Service Capacity
-Units: Mbps*connection/tower
-This is the discrepancy between capacity demand and capacity 
-        actual.
+Type: Constant  
+Formula: 0  
+Units: Dmnl  
+Assumptions: This variable represents whether or not a new tower is built when it is oversubscribed. Currently a binary (yes/no; 0/1) but can be modified to be an investment delay  
 
-Internet Service Capacity= INTEG (
-    Internet service capacity rate,
-        maximum speed per connection*fixed wireless user limit)
-Units: Mbps*connections/tower
+### tower oversubscription factor
 
-Internet service capacity rate=
-    IF THEN ELSE(tower oversubscription factor <= Fixed Wireless Towers, internet capacity discrepancy
-/Time, (fixed wireless user limit
-    *maximum speed per connection)/Time)
-Units: Mbps*connection/(Year*tower)
-The assumption here is that if the tower oversubscription factor 
-        is less than the number of towers (i.e., there are enough 
-        towers), then the discrepancy structure will be valid. However, 
-        if there are not enough towers to meet demand, then the capacity 
-        rate will stay at its max level, which is the user limit * max 
-        speed per connection.
-
-Internet Service Demand= INTEG (
-    Internet service demand rate,
-        INIT NBN connections)
-Units: connections
-
-Internet service demand rate=
-    (business internet demand+residential internet demand)*demand per location
-/Time
-Units: connection/Year
-Assume that all businesses require a connection to the internet
-
-internet service performance=
-    Internet Service Capacity/Internet Service Demand
-Units: Mbps/tower
-This is the equivalent of a supply/demand ratio
-
-max number of premises to connect to the internet=
-    Residential Housing+Tourism Housing
-Units: structure
-
-maximum speed per connection=
-    75
-Units: Mbps
-Fixed wireless has a maximum plan speed of 75Mbps
-
-"number of businesses (agriculture)"=
-    INTEGER(sum("number of businesses in income bracket (agriculture)"[Business Income
-!]))
-Units: structure
-
-"number of businesses (other)"=
-    INTEGER(sum("number of businesses in income bracket (other)"[Business Income
-!]))
-Units: structure
-MIN(INTEGER(sum("number of businesses in income bracket 
-        (other)"[Business Income!])), "business limit (other)")
-
-"number of businesses (tourism)"=
-    INTEGER(sum("number of businesses in income bracket (tourism)"[Business Income
-!]))
-Units: structure
-
-number of desired tourist houses=
-    Number Of Tourists/(average size of household*number of times each tourist house occupied per year
-)
-Units: structure
-Assuming that tourist occupancy is even across the year
-
-Residential Housing= INTEG (
-    Residential housing allocation rate,
-        67)
-Units: structure
-
-residential internet demand=
-    max number of premises to connect to the internet*households with internet access fraction
-Units: structure
-
-Tourism Housing= INTEG (
-    Tourism housing allocation rate,
-        33)
-Units: structure
-
-tower build delay time=
-    2
-Units: Year
-Assume it takes two years to build
-
-tower investment responsiveness=
-    0
-Units: Dmnl
-This variable represents whether or not a new tower is built 
-        when it is oversubscribed. Currently a binary (yes/no) but can 
-        be modified to be an investment delay
-
-tower oversubscription factor=
-    INIT number of towers+(Internet Service Demand/fixed wireless user limit)-
-Fixed Wireless Towers
-Units: tower
-Desired state of system
+Type: Auxiliary  
+Formula: INIT number of towers + (Internet Service Demand / fixed wireless user limit) - Fixed Wireless Towers  
+Units: tower  
+Assumptions: Desired state of system  (Initial number of towers plus the number mandated by the demand)  
 
 
