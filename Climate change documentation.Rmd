@@ -24,7 +24,9 @@ There are four climate-related models that make up the climate change component,
 
 ## *Model formulation*
 
-For each of the four climate models, we generated linear models based on past data. The rainfall model is for annual rainfall; the temperature model is for annual mean maximum temperature; the CO~2~ model is for monthly CO~2~ measurements; and for bushfire we modelled the annual mean Forest Fire Danger Index (@matthews_comparison_2009) for the Forrest area.   
+For each of the four climate models, we generated linear models based on past data. The rainfall model is for annual rainfall; the temperature model is for annual mean maximum temperature; the CO~2~ model is for monthly CO~2~ measurements; and for bushfire we modelled the annual mean Forest Fire Danger Index (@matthews_comparison_2009) for the Forrest area. The linear models were created using data from 1990-2020.  
+
+The climate damage structure was adapted from FeliX (@rydzak_impact_2010).  
 
 The cultural burning structure represents the percentage of land that is managed by cultural burning. The initial value is 0 and the model is 'switched' on or off depending on scenario. The cultural burning goal is set as 100%.
 
@@ -62,141 +64,187 @@ Formula: reference FFDI/FFDI model
 Units: Dmnl  
 Assumptions: Modelled FFDI at time of simulation as proportion of reference FFDI  
 
-climate damage fraction=
-    1/(1+climate damage scale*(temperature change since 1865/reference temperature for climate damages
-)^climate damage nonlinearity)
-Units: Dmnl
-Fraction of Output lost to combating Climate Change.
+### climate damage fraction  
 
-climate damage nonlinearity=
-    2
-Units: Dmnl
-Nonlinearity of Climate Damage Cost Fraction.
+Type: Auxiliary  
+Formula: 1 / ( 1 + climate damage scale * (temperature change since 1865 / reference temperature for climate damages ) ^ climate damage nonlinearity)  
+Units: Dmnl  
+Assumptions: Variable and formula taken from FeliX (@rydzak_impact_2010). Fraction of Output lost to combating Climate Change.  
 
-climate damage scale=
-    0.013
-Units: Dmnl
-Climate Damage Fraction at Reference Temperature.
+### climate damage nonlinearity  
 
-CO2 change=
-    CO2 linear model-reference CO2
-Units: ppm
+Type: Constant  
+Formula: 2  
+Units: Dmnl  
+Assumptions: Variable and formula taken from FeliX (@rydzak_impact_2010). Nonlinearity (exponent) of Climate Damage Cost Fraction.  
 
-CO2 linear model=
-    CO2 model coefficient*Time - 3177.44
-Units: ppm
-Cape Grim data modelled y-intercept -3177.44
+### climate damage scale  
 
-CO2 model coefficient=
-    1.77
-Units: ppm/Year
-Cape Grim linear model of CO2 increase
+Type: Constant  
+Formula: 0.013  
+Units: Dmnl  
+Assumptions: Variable and formula taken from FeliX (@rydzak_impact_2010). Coefficient for climate damage fraction at Reference Temperature.  
 
-Cultural Burning= INTEG (
-    Cultural burning rate,
-        0)
-Units: Dmnl
+### CO2 change  
 
-cultural burning adjustment time=
-    15
-Units: Year
-Victorian Cultural Fire Strategy states a 10 year transition 
-        time to properly implement cultural burning, as Country is 
-        currently too sick to immediatly begin cultural burns. We assume 
-        an additional 5 years to implement the strategy.
+Type: Auxiliary  
+Formula: CO2 linear model - reference CO2  
+Units: ppm  
+Assumptions: Change from reference CO2 value  
 
-cultural burning discrepancy=
-    cultural burning goal-Cultural Burning
-Units: Dmnl
+### CO2 linear model  
 
-cultural burning goal=
-    1
-Units: Dmnl
-The goal is to have 100% of land managed by cultural burning
+Type: Auxiliary  
+Formula: CO2 model coefficient * Time - 3177.44  
+Units: ppm  
+Assumptions: Model derived from data. See code and data in Github.  
 
-Cultural burning rate=
-    IF THEN ELSE(Time < 2025, 0, (cultural burning discrepancy/cultural burning adjustment time
-)*cultural burning scenario switch)
-Units: 1/Year
-Assume that cultural burning won't commence until 2025
+### CO2 model coefficient  
 
-cultural burning scenario switch=
-    0
-Units: Dmnl
+Type: Constant  
+Formula: 1.77  
+Units: ppm/Year  
+Assumptions: Model derived from data. See code and data in Github.  
 
-FFDI model=
-    (FFDI model coefficient*Time) - 51.7397
-Units: Dmnl
-linear model of FFDI dataset from 1990-2020
+### Cultural Burning  
 
-FFDI model coefficient=
-     0.02662
-Units: 1/Year
-Coefficient of linear model of FFDI dataset 1990-2020
+Type: Stock  
+Formula: INTEG (Cultural burning rate), INITIAL = 0  
+Units: Dmnl  
+Assumptions:  
 
-net climate change impact on economy=
-    climate damage fraction
-Units: Dmnl
-The fraction of ecomomy output loss due to climate change.
+### cultural burning adjustment time  
 
-rainfall change=
-    rainfall linear model-reference rainfall
-Units: mm
+Type: Constant  
+Formula: 15  
+Units: Year  
+Assumptions: Victorian Cultural Fire Strategy (@the_victorian_traditional_owner_cultural_fire_knowledge_group_victorian_2021) states a 10 year transition time to properly implement cultural burning, as Country is currently too sick to immediately begin cultural burns. We assume an additional 5 years to implement the strategy.  
 
-rainfall linear model=
-    (rainfall model coefficient*Time)+ 6182.65
-Units: mm
-Intercept calculated from linear model for data 1990-2020 for 
-        Pennyroyal weather station
+### cultural burning discrepancy  
 
-rainfall model coefficient=
-    -2.711
-Units: mm/Year
-Coefficient of linear model of annual rainfall since 1990 using 
-        Pennyroyal weather station data
+Type: Auxiliary  
+Formula: cultural burning goal - Cultural Burning  
+Units: Dmnl  
+Assumptions: The difference between the goal and the current state  
 
-reference CO2=
-    348.33
-Units: ppm
-CO2 mean Cape Grim data for 1976-2000
+### cultural burning goal  
 
-reference FFDI=
-    1.4
-Units: Dmnl
-FFDI as at 1973; first year of data for linear model
+Type: Constant  
+Formula: 1  
+Units: Dmnl  
+Assumptions: The goal is to have 100% of land managed by cultural burning  
 
-reference rainfall=
-    776
-Units: mm
-Pennyroyal rainfall measuring station; mean of annual rainfall 
-        1960-2020
+### Cultural burning rate  
 
-reference temperature 1865=
-    16.6
-Units: DegreesC
-Earliest available full year dataset for Cape Otway climate 
-        station
+Type: Auxiliary  
+Formula: IF THEN ELSE ( Time < 2025, 0, (cultural burning discrepancy / cultural burning adjustment time) * cultural burning scenario switch)  
+Units: 1/Year  
+Assumptions: Assume that cultural burning won't commence until 2025  
 
-reference temperature for climate damages=
-    3
-Units: DegreesC
-Reference Temperature for Calculation of Climate Damages.
+### cultural burning scenario switch  
 
-temperature change since 1865=
-    temperature linear model-reference temperature 1865
-Units: DegreesC
+Type: Constant  
+Formula: 0  
+Units: Dmnl  
+Assumptions: The scenario switch variable. 0 = off, 1 = on.  
 
-temperature linear model=
-    (temperature model coefficient*Time)-47.88
-Units: DegreesC
-Modelled intercept of equation = -47.87707
+### FFDI model  
 
-temperature model coefficient=
-    0.03241
-Units: DegreesC/Year
-Coefficient of linear model of Cape Otway annual mean 
-        temperatures from 1990-2020
+Type: Auxiliary  
+Formula: (FFDI model coefficient * Time) - 51.7397  
+Units: Dmnl  
+Assumptions: linear model of FFDI dataset from 1990-2020. Model derived from data. See code and data in Github.  
 
+### FFDI model coefficient  
+
+Type: Constant  
+Formula: 0.02662  
+Units: 1/Year  
+Assumptions: Coefficient of linear model of FFDI dataset 1990-2020  
+
+### net climate change impact on economy  
+
+Type: Auxiliary  
+Formula: climate damage fraction  
+Units: Dmnl  
+Assumptions: Variable and formula taken from FeliX (@rydzak_impact_2010). The fraction of ecomomy output loss due to climate change.  
+
+### rainfall change  
+
+Type: Auxiliary  
+Formula: rainfall linear model - reference rainfall  
+Units: mm  
+Assumptions: Change from reference rainfall value.  
+
+### rainfall linear model  
+
+Type: Auxiliary  
+Formula: (rainfall model coefficient * Time) + 6182.65  
+Units: mm  
+Assumptions: linear model for data 1990-2020 for Pennyroyal weather station. Model derived from data. See code and data in Github.  
+
+### rainfall model coefficient  
+
+Type: Constant  
+Formula: -2.711  
+Units: mm/Year  
+Assumptions: Coefficient of linear model of annual rainfall 1990-2020 using Pennyroyal weather station data  
+
+### reference CO2  
+
+Type: Constant  
+Formula: 348.33  
+Units: ppm  
+Assumptions: CO2 mean Cape Grim data for 1976-2000. See code and data in Github.  
+
+### reference FFDI  
+
+Type: Constant  
+Formula: 1.4  
+Units: Dmnl  
+Assumptions: 1973 annual mean FFDI.  
+
+### reference rainfall  
+
+Type: Constant  
+Formula: 776  
+Units: mm  
+Assumptions: Pennyroyal rainfall measuring station; mean of annual rainfall 1960-2020. See code and data in Github.  
+
+### reference temperature 1865  
+
+Type: Constant  
+Formula: 16.6  
+Units: DegreesC  
+Assumptions: Annual mean max temperature. Earliest available full year dataset for Cape Otway climate station. See data in Github.
+
+### reference temperature for climate damages  
+
+Type: Constant  
+Formula: 3  
+Units: DegreesC  
+Assumptions: Reference Temperature change for Calculation of Climate Damages. Variable and formula taken from FeliX (@rydzak_impact_2010).  
+
+### temperature change since 1865  
+
+Type: Auxiliary  
+Formula: temperature linear model - reference temperature 1865  
+Units: DegreesC  
+Assumptions:  
+
+### temperature linear model  
+
+Type: Auxiliary  
+Formula: (temperature model coefficient * Time) - 47.88  
+Units: DegreesC  
+Assumptions: linear model for Annual mean max temp 1990-2020 for Cape Otway weather station. Model derived from data. See code and data in Github.  
+
+### temperature model coefficient  
+
+Type: Constant  
+Formula: 0.03241  
+Units: DegreesC/Year  
+Coefficient of linear model of Cape Otway annual mean max temperatures from 1990-2020. Model derived from data. See code and data in Github.  
 
 
 ## References
