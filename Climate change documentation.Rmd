@@ -1,7 +1,7 @@
 ---
 title: "Climate change component documentation"
 author: "Katrina Szetey"
-date: "06/11/2020"
+date: "03/02/2022"
 output: html_document
 ---
 
@@ -20,20 +20,24 @@ Forrest is vulnerable to bushfires and drought, and the effect of climate change
 
 ## *System conceptualisation*
 
-There are three main drivers in the Climate Change component: bushfire, increasing temperatures, and flooding. 
-
-### Bushfire
-Bushfire is a complex phenomenon which is driven by many local scale factors. We have adapted the wildfire model from Collins et al. (2013) to model bushfire dynamics, and then built in an occurrence structure for regular bushfire and catastrophic bushfire. For regular bushfire, we modelled the joint occurrence of higher temperatures, lower rainfall, fires per year and relative fire intensity. For catastrophic bushfire, we assumed these same four inputs but with greater thresholds.
-
-### Increasing temperature
-Here we used a lookup table based upon the "temperature change from preindustrial" structure found in the FeliX model, with the BAU scenario, which assumes a temperature change of +1.85 degrees C by 2050.
-
-### Flooding
-Climate change is also predicted to increase flooding due to more intense rain events. Additionally, Forrest is close to and down slope from the West Barwon Dam. Here we assumed that rainfall in excess of the 95th percentile of historical data will result in flooding.
-
-
+There are four climate-related models that make up the climate change component, with a separate structure for cultural burning. These four models are for carbon dioxide (annual mean), temperature, rainfall, and bushfire.  
 
 ## *Model formulation*
+
+For each of the four climate models, we generated linear models based on past data.  
+
+The cultural burning structure represents the percentage of land that is managed by cultural burning. The initial value is 0 and the model is 'switched' on or off depending on scenario. The cultural burning goal is set as 100%.
+
+
+## Data sources  
+
+Data are available at [https://github.com/pelagikat/Local-SDGs-systems-model](https://github.com/pelagikat/Local-SDGs-systems-model)  
+
+CO~2~ data was obtained from the [Cape Grim monitoring station](https://www.csiro.au/en/research/natural-environment/atmosphere/latest-greenhouse-gas-data)  
+
+Temperature and rainfall data was obtained from the [Bureau of Meteorology](http://www.bom.gov.au/climate/data/?ref=ftr). Temperature data was from the Cape Otway weather station, and rainfall data was from the Pennyroyal weather station. These stations were selected as they were both the most complete and spatially nearest datasets available.  
+
+Forest Fire Danger Index historical data was provided from the Victorian Government Department of Land, Water and Planning ViCClim dataset. We do not have permission to share this data.  
 
 
 ## Abbreviations

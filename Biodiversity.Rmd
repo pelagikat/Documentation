@@ -40,9 +40,14 @@ $$
 S = cA^z 
 $$
 
-where Z = 0.86 (derived from data), A = land area, c - constant, and S = number of species.
+where Z = 0.86 (derived from data), A = land area, c = constant, and S = number of species.
+
+## Data sources
 
 Data are available at [https://github.com/pelagikat/Local-SDGs-systems-model](https://github.com/pelagikat/Local-SDGs-systems-model)
+
+These data represent only those species that have data on the Atlas of Living Australia and have passed a data cleaning process. It likely represents about 40-50% of terrestrial vertebrate and vascular plant species (@graham_climate_2019). The underlying information that these data represent is climate suitability. For each species, climate variables were used to project suitability of cells across Australia for species based on current climate ranges (cells receive a value between 0-1). To create the species richness map, cells that were projected with values greater than 0.5 were classified into a binary value of 1. All species rasters were then spatially added within each taxonomic group. See [https://github.com/CarlaBirdy/MaxEnt-climate-models](https://github.com/CarlaBirdy/MaxEnt-climate-models) for the code for this analysis.
+
 Thanks to Carla Archibald for assisting with data for this model component.
 
 ***
