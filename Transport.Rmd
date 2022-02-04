@@ -1,7 +1,8 @@
 ---
 title: "Transport component documentation"
 author: "Katrina Szetey"
-date: "02/02/2022"
+date: "04/02/2022"
+bibliography: Transport.bib
 output: html_document
 ---
 
@@ -20,8 +21,9 @@ Forrest is midway between Colac and Apollo Bay, and the road between them is a k
 There is poor public transport service from Forrest to Colac or Birregurra. One service per week does not enable general uptake of public transport. This is also an inequality issue, as people of lower incomes may not be able to afford to own or use a car, and this also restricts mobility for those unable to drive, due to age or disability. More tourists may visit if there was better public transport access.
 
 
-
 ## *System conceptualisation*
+
+There are three main structures to the model of transport in Forrest. The first is road quality, the second is car use, and the third is modelling the dynamics of public transport, for which Forrest is only served by buses. Within the bus structure, we examine the current level of service, the potential level of service, and the service that would be required for there to be travel equity across the population. By travel equity, we mean that there are frequent enough bus services that people who are of lower income or reduced mobility would have as much mobility as someone with a car.  
 
 ### Conceptual model
 ```{r, echo = FALSE, warning = FALSE}
@@ -47,254 +49,327 @@ digraph {
 ")
 ```
 
-
 ## *Model formulation*
 
+The road quality structure was adapted from work by @fallah-fini_measuring_2015. We added flooding as a factor in road deterioration. The car use structure was built from data on the number of cars in Forrest and the number of car trips made each year. The bus demand structure developed from understanding how the current levels of service fell short, and examining how service levels would need to increase to meet potential demand. The travel equity structure then fed into this to calculate how demand would increase to serve those of reduced mobility.
+
+## Data sources
+
+Australian Bureau of Statistics: [Car use in Australia](https://www.abs.gov.au/statistics/industry/tourism-and-transport/survey-motor-vehicle-use-australia/latest-release)  
+
+Travel to work - ABS [Census data](https://quickstats.censusdata.abs.gov.au/census_services/getproduct/census/2016/quickstat/SSC20933)
 
 *** 
 
 ## *Equations*
 
-"0-14"= INTEG (
-         Births 
-                          + "In-out migration 0-14" 
-                          - "Ageing 0-14" 
-                          - "Deaths 0-14",
-             
-                45)
-    Units: people
-    
-"65+"= INTEG (
-     "Ageing 15-64" 
-                      + "In-out migration 65+" 
-                      - "Deaths 65+",
-        20)
-Units: people
+### age of pavement  
 
-age of pavement=
-    10
-Units: Year
-Assume 10 year old pavements at start of simulation
+Type: Constant  
+Formula: 10  
+Units: Year  
+Assumptions: Assume 10 year old pavements at start of simulation. From @fallah-fini_measuring_2015.
 
-ageing nonlinearity factor=
-    1.42
-Units: Dmnl
+### ageing nonlinearity factor  
 
-allowable number of load cycles=
-    1e+08
-Units: trip/Year
+Type: Constant  
+Formula: 1.42  
+Units: Dmnl  
+Assumptions: Exponent of function. From @fallah-fini_measuring_2015.  
 
-annual bus capacity discrapancy=
-    annual potential bus demand-max annual capacity of bus route
-Units: trip*people/Year
+### allowable number of load cycles  
 
-annual potential bus demand=
-    average number of bus trips per year*number people with ability to travel by bus
-Units: trip*people/Year
+Type: Constant  
+Formula: 1e+08  
+Units: trip/Year  
+Assumptions: From @fallah-fini_measuring_2015  
 
-annual probability of flood=
-    0.01
-Units: Dmnl
+### annual bus capacity discrepancy  
 
-average litres of petrol per 100km=
-    11.1
-Units: litre
-https://www.abs.gov.au/statistics/industry/tourism-and-transport/
-        survey-motor-vehicle-use-australia/latest-release
+Type: Auxiliary  
+Formula: annual potential bus demand - max annual capacity of bus route  
+Units: trip*people/Year  
+Assumptions:  
 
-average number of bus trips per year=
-    156
-Units: trip/Year
-Assumption: 3 x return trips per week per person = 156 trips per 
-        person
+### annual potential bus demand  
 
-average trip distance=
-    19
-Units: Km
+Type: Auxiliary  
+Formula: average number of bus trips per year * number people with ability to travel by bus  
+Units: trip*people/Year  
+Assumptions:  
+
+### annual probability of flood  
+
+Type: Constant  
+Formula: 0.01  
+Units: Dmnl  
+Assumptions: Assumptions: Corangamite Catchment Management Authority [flood mapping portal](https://www.ccmaknowledgebase.vic.gov.au/flood/cb_pages/flood_mapping.php) shows 1 in 100 year riverine flood extent (limited data)  
+
+### average litres of petrol per 100km  
+
+Type: Constant  
+Formula: 11.1  
+Units: litre  
+Assumptions: [Source](https://www.abs.gov.au/statistics/industry/tourism-and-transport/survey-motor-vehicle-use-australia/latest-release)
+
+### average number of bus trips per year  
+
+Type: Constant  
+Formula: 156  
+Units: trip/Year  
+Assumptions: 3 x return trips per week per person = 156 trips per person  
+
+### average trip distance  
+
+Type: Constant  
+Formula: 19  
+Units: Km  
 Census travel to work daya
 
-bus capacity=
-    24
-Units: people
-Confirmed with bus line running route
+### bus capacity  
 
-bus frequency=
-    52
-Units: trip/Year
+Type: Constant  
+Formula: 24  
+Units: people  
+Assumptions: Confirmed with bus line running route  
 
-bus frequency required for travel equity=
-    travel equity bus demand/bus capacity
-Units: trip/Year
+### bus frequency  
 
-bus frequency required for whole population=
-    annual potential bus demand/bus capacity
-Units: trip/Year
+Type: Constant  
+Formula: 52  
+Units: trip/Year  
+Assumptions: Bus runs once a year currently. Can be a scenario variable.  
 
-car travel cost per year=
-    ((average litres of petrol per 100km*cost of petrol)/average trip distance
-)*car use
-Units: trip*dollar/(Year*Km)
+### bus frequency required for travel equity  
 
-car use=
-    (number of cars in Forrest*number of car trips per year per car)
-Units: trip/Year
+Type: Auxiliary  
+Formula: travel equity bus demand / bus capacity  
+Units: trip/Year  
+Assumptions:  
 
-corrective maintenance=
-    IF THEN ELSE(critical condition index >=50 :AND: critical condition index 
-<80, 1, 0.5)
-Units: Dmnl
+### bus frequency required for whole population  
 
-cost of petrol=
-    1.47
-Units: $/litre
-https://www.globalpetrolprices.com/Australia/Melbourne/gasoline_p
-        rices
+Type: Auxiliary  
+Formula: annual potential bus demand / bus capacity  
+Units: trip/Year  
+Assumptions:  
 
-critical condition index=
-    MAX(52, Road Quality*100)
-Units: Dmnl
+### car travel cost per year  
 
-damage to road from flooding=
-    0.5
-Units: Dmnl
-From Sultana et al 2015 - reduction in road structure of up to 
-        50%
+Type: Auxiliary  
+Formula: ((average litres of petrol per 100km * cost of petrol ) / average trip distance ) * car use  
+Units: trip * dollar / (Year * Km)  
+Assumptions:  
 
-deterioration multiplier=
-    1.2
-Units: Dmnl
+### car use  
 
-effect of ageing of pavement on deterioration rate=
-    1+(age of pavement/service life of road)^ageing nonlinearity factor
-Units: Dmnl
+Type: Auxiliary  
+Formula: (number of cars in Forrest * number of car trips per year per car)  
+Units: trip/Year  
+Assumptions:  
 
-effect of flooding on road quality=
-    1-(damage to road from flooding*annual probability of flood)
-Units: Dmnl
+### corrective maintenance  
 
-effect of road quality on deterioration rate=
-    1+(road quality multiplier*(1-Road Quality)^road quality nonlinearity factor
-)
-Units: Dmnl
+Type: Auxiliary  
+Formula: IF THEN ELSE ( critical condition index >=50 :AND: critical condition index <80, 1, 0.5)  
+Units: Dmnl  
+Assumptions: From @fallah-fini_measuring_2015  
 
-fraction of population who would choose to travel by bus=
-    0.35
-Units: Dmnl
-Aritrary value
+### cost of petrol  
 
-max annual capacity of bus route=
-    bus capacity*bus frequency
-Units: trip*people/Year
+Type: Constant  
+Formula: 1.47  
+Units: $/litre  
+Assumptions: Source [Global petrol prices](https://www.globalpetrolprices.com/Australia/Melbourne/gasoline_prices)  
 
-number of car trips per year per car=
-    654
-Units: trip/(vehicle*Year)
-Vic total km travelled 2020 = 63,602,000,000 km Vic number of 
-        vehicles 2020 = 5,114,444 Avg trip distance = 19km Total km 
-        travelled/total no cars = 12,435km travelled by each car in one 
-        year Div by avg trip distance = 654 trips per year
+### critical condition index  
 
-number of cars in Forrest=
-    LOOKUP EXTRAPOLATE(table for car ownership, Time )
-Units: vehicle
+Type: Auxiliary  
+Formula: MAX(52, Road Quality * 100)  
+Units: Dmnl  
+Assumptions: From @fallah-fini_measuring_2015  
 
-number of people of reduced mobility=
-    "0-14"+"65+"+sum of people below poverty line
-Units: people
-This is a simplification - many people 65 and over will be able 
-        to drive, but as they age this will change
+### damage to road from flooding  
 
-Number Of Tourists= INTEG (
-    Rate of tourist increase,
-        0)
-Units: people/Year
+Type: Constant  
+Formula: 0.5  
+Units: Dmnl  
+Assumptions: From @sultana_study_2015 - reduction in road structure of up to 50%  
 
-number people below poverty line[poverty line ss,Gender]=
-    number labour force in income bracket[poverty line ss,Gender]
-Units: people
-Poverty line is below first quartile ($0-399). This is in line 
-        with the ACOSS figure of $457
+### deterioration multiplier  
 
-number people with ability to travel by bus=
-    (fraction of population who would choose to travel by bus*total population
-)
-Units: people
-Multiply fraction by population on incorporation
+Type: Constant  
+Formula: 1.2  
+Units: Dmnl  
+Assumptions: From @fallah-fini_measuring_2015  
 
-preventative maintenance=
-    IF THEN ELSE(critical condition index>=80, 1, 0.5)
-Units: Dmnl
+### effect of ageing of pavement on deterioration rate  
 
-restorative maintenance=
-    IF THEN ELSE(critical condition index >=0, 1, 1)
-Units: Dmnl
+Type: Auxiliary  
+Formula: 1 + (age of pavement / service life of road) ^ ageing nonlinearity factor  
+Units: Dmnl  
+Assumptions: From @fallah-fini_measuring_2015  
 
-road damage ratio=
-    (car use+average number of bus trips per year+tourist trips per year)/allowable number of load cycles
-Units: Dmnl
+### effect of flooding on road quality  
 
-Road deterioration rate=
-    (deterioration multiplier*effect of ageing of pavement on deterioration rate
-*effect of road quality on deterioration rate
-    *road damage ratio*effect of flooding on road quality*Road Quality)/Time
-Units: 1/Year
+Type: Auxiliary  
+Formula: 1 - (damage to road from flooding * annual probability of flood)  
+Units: Dmnl  
+Assumptions:  
 
-Road maintenance rate=
-    (IF THEN ELSE(Road Quality >= 0.8, 0, IF THEN ELSE(Road Quality >=0.6 :AND:
- Road Quality <0.8, preventative maintenance, IF THEN ELSE(Road Quality >=0.4
- :AND: Road Quality <0.6, corrective maintenance, IF THEN ELSE( Road Quality
- >=0.2 :AND: Road Quality <0, restorative maintenance, restorative maintenance
-)))))/Time
-Units: 1/Year
+### effect of road quality on deterioration rate  
 
-Road Quality= INTEG (
-    Road maintenance rate-Road deterioration rate,
-        0)
-Units: Dmnl
+Type: Auxiliary  
+Formula: 1 + (road quality multiplier * ( 1 - Road Quality) ^ road quality nonlinearity factor)  
+Units: Dmnl  
+Assumptions: From @fallah-fini_measuring_2015  
 
-road quality multiplier=
-    8.6
-Units: Dmnl
+### fraction of population who would choose to travel by bus  
 
-road quality nonlinearity factor=
-    2
-Units: Dmnl
+Type: Constant  
+Formula: 0.35  
+Units: Dmnl  
+Assumptions: Arbitrary value, can be a scenario variable  
 
-service life of road=
-    30
-Units: Year
+### max annual capacity of bus route  
 
-sum of people below poverty line=
-    sum(number people below poverty line[poverty line ss!,Gender!])
-Units: people
+Type: Auxiliary  
+Formula: bus capacity * bus frequency  
+Units: trip*people/Year  
+Assumptions:   
 
-table for car ownership(
-    [(2000,0)-(2100,300)],(2006,266),(2011,172),(2016,167))
-Units: Dmnl
-Data from ABS: 2006 = 266; 2011 = 172; 2016 = 167
+### number of car trips per year per car  
 
-total population=
-    "0-14" + "15-64" + "65+"
-Units: people
+Type: Constant  
+Formula: 654  
+Units: trip / (vehicle * Year)  
+Assumptions: Vic total km travelled 2020 = 63,602,000,000 km. Vic number of vehicles 2020 = 5,114,444. Avg trip distance = 19km. Total km travelled/total no cars = 12,435km travelled by each car in one year. Div by avg trip distance = 654 trips per year.  
 
-tourist trips per year=
-    Number Of Tourists*trips per tourist
-Units: trip/Year
+### number of cars in Forrest  
 
-travel equity bus demand=
-    average number of bus trips per year*number of people of reduced mobility
-Units: trip*people/Year
+Type: Lookup  
+Formula: LOOKUP EXTRAPOLATE(table for car ownership, Time )  
+Units: vehicle  
+Assumptions:  
 
-travel equity bus frequency discrepancy=
-    bus frequency required for travel equity-bus frequency
-Units: trip/Year
+### number of people of reduced mobility  
 
-trips per tourist=
-    2
-Units: trip/person
+Type: Auxiliary  
+Formula: "0-14" + "65+" + sum of people below poverty line  
+Units: people  
+Assumptions: This is a simplification - many people 65 and over will be able to drive, but as they age this will change  
 
-whole population bus frequency discrepancy=
-    bus frequency required for whole population-bus frequency
-Units: trip/Year
+### number people with ability to travel by bus  
 
+Type: Auxiliary  
+Formula: (fraction of population who would choose to travel by bus * total population)  
+Units: people  
+Assumptions:  
+
+### preventative maintenance  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE ( critical condition index >= 80, 1, 0.5)  
+Units: Dmnl  
+Assumptions: From @fallah-fini_measuring_2015  
+
+### restorative maintenance  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE (critical condition index >=0, 1, 1)  
+Units: Dmnl  
+Assumptions: From @fallah-fini_measuring_2015  
+
+### road damage ratio  
+
+Type: Auxiliary  
+Formula: (car use + average number of bus trips per year + tourist trips per year) / allowable number of load cycles  
+Units: Dmnl  
+Assumptions: From @fallah-fini_measuring_2015  
+
+### Road deterioration rate  
+
+Type: Auxiliary  
+Formula: (deterioration multiplier * effect of ageing of pavement on deterioration rate * effect of road quality on deterioration rate * road damage ratio * effect of flooding on road quality * Road Quality) / Time  
+Units: 1/Year  
+Assumptions: From @fallah-fini_measuring_2015  
+
+### Road maintenance rate  
+
+Type: Auxiliary  
+Formula: (IF THEN ELSE (Road Quality >= 0.8, 0, IF THEN ELSE (Road Quality >=0.6 :AND: Road Quality <0.8, preventative maintenance, IF THEN ELSE (Road Quality >=0.4  :AND: Road Quality <0.6, corrective maintenance, IF THEN ELSE ( Road Quality >=0.2 :AND: Road Quality <0, restorative maintenance, restorative maintenance ))))) / Time  
+Units: 1/Year  
+Assumptions: From @fallah-fini_measuring_2015  
+
+### Road Quality  
+
+Type: Stock  
+Formula: INTEG (Road maintenance rate - Road deterioration rate), INITIAL = 0)  
+Units: Dmnl  
+Assumptions: From @fallah-fini_measuring_2015. Assume road quality at start of simulation is good.  
+
+### road quality multiplier  
+
+Type: Constant  
+Formula: 8.6  
+Units: Dmnl  
+Assumptions: From @fallah-fini_measuring_2015.  
+
+### road quality nonlinearity factor  
+
+Type: Constant  
+Formula: 2  
+Units: Dmnl  
+Assumptions: From @fallah-fini_measuring_2015.  
+
+### service life of road  
+
+Type: Constant  
+Formula: 30  
+Units: Year  
+Assumptions: From @fallah-fini_measuring_2015.  
+
+### table for car ownership
+
+Type: Lookup table  
+Formula: ([(2000,0)-(2100,300)],(2006,266),(2011,172),(2016,167))  
+Units: Dmnl  
+Assumptions: ABS Census data: 2006 = 266; 2011 = 172; 2016 = 167
+
+### tourist trips per year  
+
+Type: Auxiliary  
+Formula: Number Of Tourists * trips per tourist  
+Units: trip/Year  
+Assumptions: All tourists come using cars  
+
+### travel equity bus demand  
+
+Type: Auxiliary  
+Formula: average number of bus trips per year * number of people of reduced mobility  
+Units: trip*people/Year  
+Assumptions:  
+
+### travel equity bus frequency discrepancy  
+
+Type: Auxiliary  
+Formula: bus frequency required for travel equity - bus frequency  
+Units: trip/Year  
+Assumptions:  
+
+## trips per tourist  
+
+Type: Constant  
+Formula: 2  
+Units: trip/person  
+Assumptions: Tourists drive on roads at least twice while in Forrest  
+
+### whole population bus frequency discrepancy  
+
+Type: Auxiliary  
+Formula: bus frequency required for whole population - bus frequency  
+Units: trip/Year  
+Assumptions:  
+
+# References
 
