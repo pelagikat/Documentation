@@ -1,0 +1,7 @@
+# Introduction {.unnumbered}
+
+## Local SDGs systems model {-}
+
+This document is the complete model documentation for the Local SDGs systems model, designed by Katrina Szetey, Enayat A. Moallemi, Brett A. Bryan, and the people of Forrest, Victoria, Australia. The model describes the system of Forrest in the context of sustainability achievement and the Sustainable Development Goals.
+
+The model contains twelve *model components*, and this document is arranged with one chapter for each of those components. There is an overview of the component, a stating of *problem definitions*, and *dynamic hypotheses* that explain how each problem has emerged. There is a description of the system conceptualisation for each component, and a diagram of a conceptual model (excepting for the Climate Change component). Data sources are listed and links to code and data in Github are provided. The final section of each chapter is a listing of every variable in the model component, stating variable type, formula, units, and any assumptions and data that were used in formulating the variable. References are listed at the end of the document.

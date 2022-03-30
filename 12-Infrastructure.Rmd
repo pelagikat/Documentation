@@ -1,0 +1,251 @@
+
+# Infrastructure component
+
+The Forrest community have four major infrastructure projects currently in train which they have identified as being important for the future development and growth of Forrest. There is one additional project which is as important for the community but not reliant on outside intervention.
+
+## *Problem definition*
+1. In the past, on-site septic systems were adequate for a town the size of Forrest, which did not have many visitors. With the change to a tourism economy, there are many more people that come to town, particularly for events, and the now ageing septic infrastructure requires upgrading. The limits of septic infrastructure for waste are hindering attempts to increase housing in the town. Studies have been undertaken by Barwon Water to upgrade wastewater infrastructure but there has been no progress, partly due to funding issues. The current option on the table expects the community to contribute, which may delay or entirely derail the development.
+
+*Dynamic hypothesis:*
+Ageing septic systems that don’t meet current safety standards are no longer adequate and new infrastructure is urgently needed. This affects the local environment and biodiversity, the local economy (by limiting tourism), health of local residents, and additional development in the town.
+
+2. The Forrest MTB Trails were first opened in 2005, encompassing over 60km of trails. A proposal was released in December 2019 to increase the MTB trail network by approximately 38kms, including restructuring the existing trails and creating a new Trail Head. This plan is aimed to revitalise mountain bike tourism and re-establish Forrest as a nationally significant mountain bike destination.
+
+*Dynamic hypothesis:*
+Mountain bike trails in Forrest are already a major tourism drawcard but upgrades to the trail network would encourage more visitation to the town. This is a benefit to the tourism economy but issues still remain around accommodation (i.e. housing supply) and wastewater.
+
+3. The Forrest Common is a piece of public land which could be put to better use for the community. After several years of consultation with Colac Otway Shire, a plan has been approved but it is beyond the ability of Council to fund.
+
+*Dynamic hypothesis:*
+A revamped Forrest Common would benefit tourism and in-migration of families (due to new play equipment).
+
+4. The community identified that a bushfire safer place is necessary for the community, and that one of the DELWP parcels of land could be used to achieve this. A feasibility study and preliminary plans have been completed, but funding needs to be found to build it.
+
+*Dynamic hypothesis:*
+If funding can be obtained for the Gateway to The Otways Centre, this would have a positive impact on community health and wellbeing in the event of a bushfire and potentially prevent loss of life.
+
+
+## *System conceptualisation*
+
+The life cycle of an infrastructure project is focused on three stages: acquiring the funding, building the infrastructure, and completion of the project. Accordingly, we have developed our system around these three stages.
+
+### Conceptual model
+```{r, echo = FALSE, warning = FALSE, dev='png', fig.width=15}
+library(DiagrammeR)
+
+grViz("
+digraph {
+  graph[layout = dot, rankdir = LR]
+  node[shape = box, fontname = Arial]
+  'Funding'; 'Build in progress'; 'Completed infrastructure'
+
+  node[shape = oval, fontname = Arial]
+  'Time delay'
+
+  # edge statements
+  'Funding'->'Build in progress' 'Build in progress'->'Completed infrastructure'
+  'Time delay'->'Funding' 'Time delay'->'Build in progress'
+ 
+}
+")
+
+```
+
+## *Model formulation*
+
+We have defined the Funding, Build-in-Progress and Completion stages of infrastructure projects as stocks in the model. We have incorporated delays through the process for funding, build delay and build time. The crucial information which is required for other model components is the time at which the build is complete and the infrastructure is ready for use.
+
+As there are five infrastructure projects and the process is the same for each, the five projects have been subscripted into model structure; that is, five different versions (subscripts) exist in the one model structure.  
+
+### Abbreviations used:
+
+CFA = Country Fire Authority (regional fire service)  
+GTOC = Gateway to the Otways Centre (bushfire safer place)  
+MTB = Mountain Bike (e.g., MTB Trails = Mountain Bike Trails)  
+
+
+***
+
+## *Equations*
+
+### asset component discrepancy  
+
+Type: Auxiliary  
+Formula: total number of asset components - Completed Infrastructure Item  
+Units: asset component  
+Assumptions: This variable is split (subscripted) across the 5 infrastructure projects.  
+    
+### build delay  
+
+Type: Constant    
+Formula: [Forrest Common] = 0.5  
+[GTOC] = 1  
+[MTB Trails] = 1  
+[Wastewater] = 2  
+[CFA Truck] = 0.5  
+Units: Year
+Assumptions: Arbitrary values; can be used for scenarios if needed.  
+
+### build time  
+
+Type: Constant    
+Formula: [Forrest Common] = 0.5  
+[GTOC] = 2  
+[MTB Trails] = 1  
+[Wastewater] = 3  
+[CFA Truck] = 0.25  
+Units: Year  
+Assumptions: Arbitrary values; can be used for scenarios if needed.  
+    
+### CFA Truck availability  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE (time at which infrastructure item is complete[CFA Truck] > 0, STEP(1, (Current time + time at which infrastructure item is complete [CFA Truck])) , 0 )  
+Units: Year  
+Assumptions: The time from which the infrastructure is complete and can begin having an effect on other variables  
+
+### Completed Infrastructure Item
+
+Type: Stock  
+Formula: INTEG (Infrastructure completion rate), INITIAL = 0)  
+Units: asset component  
+Assumptions: This variable is split (subscripted) across the 5 infrastructure projects. 
+
+### cost per asset component
+
+Type: Constant  
+Formula: [Forrest Common] = 1.7e+06 / 10  
+[GTOC] = ( 1.2e+07) / 10  
+[MTB Trails] = 4.55e+06 / 10  
+[Wastewater] = 1.01e+07 / 10  
+[CFA Truck] = 210000 / 10  
+Units: dollar/asset component  
+Assumptions: Total cost of project divided by 10  
+    
+### Current time  
+
+Type: Constant  
+Formula: 2021  
+Units: Year  
+Assumptions: Reference year to compare to project completion times.  
+
+### Forrest Common availability  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE ( time at which infrastructure item is complete [Forrest Common] >0, STEP(1, (Current time + time at which infrastructure item is complete[Forrest Common])) , 0 )  
+Units: Year  
+Assumptions: The time from which the infrastructure is complete and can begin having an effect on other variables  
+
+### funding duration  
+
+Type: Constant  
+Formula: [Forrest Common] = 1  
+[GTOC] = 2  
+[MTB Trails] = 1  
+[Wastewater] = 3  
+[CFA Truck] = 1  
+Units: Year  
+Assumptions: Arbitrary values; can be used for scenarios if needed.  
+
+### funding lag  
+
+Type: Constant  
+Formula: [Forrest Common] = 2  
+[GTOC] = 5  
+[MTB Trails] = 0.5  
+[Wastewater] = 2  
+[CFA Truck] = 1  
+Units: Year  
+Assumptions: Arbitrary values; can be used for scenarios if needed.  
+    
+### funding scenario
+
+Type: Constant  
+Formula: [Forrest Common] = 0  
+[GTOC] = 0  
+[MTB Trails] = 1  
+[Wastewater] = 0  
+[CFA Truck] = 0  
+Units: Dmnl  
+Assumptions: This is a 'switch' variable (0 = off, 1 = on)  
+    
+### GTOC availability  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE ( time at which infrastructure item is complete[GTOC] > 0, STEP (1, (Current time + time at which infrastructure item is complete[GTOC])) , 0 )  
+Units: Year  
+Assumptions: The time from which the infrastructure is complete and can begin having an effect on other variables  
+
+### infrastructure approved funding
+
+Type: Auxiliary  
+Formula: [Forrest Common] = IF THEN ELSE ( funding scenario[Forrest Common] = 1, 1.7e+06, 0)  
+[GTOC] = IF THEN ELSE ( funding scenario[GTOC] = 1, 1.2e+07, 0)  
+[MTB Trails] = IF THEN ELSE ( funding scenario[MTB Trails] = 1, 4.55e+06, 0)  
+[Wastewater] = IF THEN ELSE ( funding scenario[Wastewater] = 1, 1.01e+07, 0)  
+[CFA Truck] = IF THEN ELSE ( funding scenario[CFA Truck] = 1, 21000, 0)
+Units: dollar
+Assumptions: These values are the funding estimates for each project. See The Forrest and District Plan for more information (@szetey_forrest_2020)
+
+### Infrastructure Build In Progress
+
+Type: Stock  
+Formula: INTEG (Infrastructure start rate - Infrastructure completion rate), INITIAL = 0)  
+Units: asset component  
+Assumptions: This variable is split (subscripted) across the 5 infrastructure projects. 
+
+### Infrastructure completion rate  
+
+Type: Auxiliary  
+Formula: (asset component discrepancy) / build time  
+Units: asset component/Year  
+Assumptions: This variable is split (subscripted) across the 5 infrastructure projects. 
+
+### Infrastructure Funding  
+
+Type: Stock  
+Formula: INTEG ( -Infrastructure funding allocation rate), INITIAL = infrastructure approved funding  
+Units: dollar  
+Assumptions: This variable is split (subscripted) across the 5 infrastructure projects. 
+
+### Infrastructure funding allocation rate  
+
+Type: Auxiliary  
+Formula: Infrastructure Funding / funding duration  
+Units: dollar/Year  
+Assumptions: This variable is split (subscripted) across the 5 infrastructure projects. 
+
+### Infrastructure start rate
+
+Type: Auxiliary  
+Formula: DELAY1 ( Infrastructure funding allocation rate / cost per asset component, build delay + funding lag)  
+Units: asset component/Year  
+Assumptions: This variable is split (subscripted) across the 5 infrastructure projects. 
+
+### MTB trails improvements availability  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE ( time at which infrastructure item is complete[MTB Trails ]> 0, STEP(1, (Current time + time at which infrastructure item is complete[MTB Trails])) , 0 )  
+Units: Year  
+Assumptions: The time from which the infrastructure is complete and can begin having an effect on other variables  
+
+### time at which infrastructure item is complete  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE(funding scenario > 0, build delay + build time + funding lag , 0 )  
+Units: Year  
+Assumptions: This variable is split (subscripted) across the 5 infrastructure projects. 
+
+### total number of asset components  
+
+Type: Constant  
+Formula: 10  
+Units: asset component  
+Assumptions: Have arbitrarily assumed that each infrastructure project has 10 stages. This variable is split (subscripted) across the 5 infrastructure projects.  
+
+### Wastewater availability  
+
+Type: Auxiliary  
+Formula: IF THEN ELSE ( time at which infrastructure item is complete[Wastewater] > 0, STEP(1, (Current time + time at which infrastructure item is complete[Wastewater])) , 0 )  
+Units: Year  
+Assumptions: The time from which the infrastructure is complete and can begin having an effect on other variables

@@ -1,0 +1,26 @@
+---
+title: "Local SDGs systems model documentation"
+author: "Katrina Szetey, Enayat A. Moallemi, Brett A. Bryan"
+date: "February 2022"
+fontsize: 11pt
+secnumdepth: 1
+lof: False
+lot: False
+site: "bookdown::bookdown_site"
+documentclass: book
+bibliography: ["biod.bib", "CC.bib", "Econrefs.bib", "health.bib", "Housing.bib", "ineq.bib", "Inf.bib", "LURefs.bib", "poprefs.bib", "Transport.bib"]
+biblio-style: apalike
+geometry: "left=3cm, right=3cm, top=2.5cm, bottom=2.5cm"
+output:
+  bookdown::pdf_book:
+    includes:
+        in_header: preamble.tex
+    keep_tex: yes
+    toc: True
+    toc-depth: 1
+    latex_engine: xelatex
+    citation_package: natbib
+urlcolor: blue
+# code to build book: bookdown::render_book("index.Rmd", "bookdown::pdf_book")
+---
+

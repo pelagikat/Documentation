@@ -1,0 +1,11 @@
+book_filename: "Model-docs"
+delete_merged_file: true
+language:
+  ui:
+    chapter_name: "Chapter "
+#rmd_files: ["index.Rmd", "02-Demographics.Rmd", "03-Land_use.Rmd", "04-Housing.Rmd", 
+#"05-Economy.Rmd", "06-Tourism.Rmd", "07-Biodiversity.Rmd", "08-Climate_change.Rmd", 
+#"09-Inequality.Rmd", "10-Health_and_wellbeing.Rmd", "11-Telecommunications.Rmd", 
+#"12-Infrastructure.Rmd", "13-Transport.Rmd", "14-References.Rmd"]    
+    
+

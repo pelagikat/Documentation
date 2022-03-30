@@ -1,0 +1,178 @@
+
+# Inequality component
+
+
+## *Problem definition*
+In the greater Otway region, 19% of people live in poverty and the median family income in Forrest is 55% lower than for the rest of Victoria (2016). Twenty percent of all families in Forrest are single-parent families (and all single parents are women). The SEIFA score (a measure of socio-economic conditions) puts Forrest in the 30% most disadvantaged areas in the country, and the 20% most disadvantaged in Victoria.
+
+*Dynamic hypothesis:*
+Intergenerational inequality is only one factor. Other contributing factors are income inequality, employment, the social gradient of health, housing stress, travel inequality, and internet access.
+
+
+## *System conceptualisation and model formulation*
+The inequality system is by nature both difficult to measure and multifaceted. To gauge the level of inequality in the Forrest system, we identified a range of contributing factors and normalised them, then took the arithmetic mean to arrive an an indicator value.
+
+### Conceptual model
+```{r, echo = FALSE, warning = FALSE, dev='png', fig.width=18 }
+library(DiagrammeR)
+
+grViz("
+digraph {
+  graph[layout = dot, rankdir = LR]
+  node[shape = box, fontname = Arial]
+  'Inequality indicator'
+
+  node[shape = oval, fontname = Arial]
+  'Intergenerational inequality'; 'Internet access'; 'Unemployment'; 'Poverty'; 'Disability'; 
+  'Housing stress'; 'Travel inequality'
+
+  # edge statements
+  'Intergenerational inequality'->'Inequality indicator' 'Internet access'->'Inequality indicator' 
+  'Unemployment'->'Inequality indicator' 'Poverty'->'Inequality indicator' 'Disability'->'Inequality indicator' 
+  'Housing stress'->'Inequality indicator' 'Travel inequality'->'Inequality indicator'
+   
+}
+")
+
+
+```
+
+Data are available at [https://github.com/pelagikat/Local-SDGs-systems-model](https://github.com/pelagikat/Local-SDGs-systems-model)
+
+*** 
+
+## *Equations*
+   
+### disability fraction  
+
+Type: Constant  
+Formula: 0.177  
+Units: Dmnl  
+Assumptions: Data obtained from [ABS: Percentage of population who have a disability](https://www.abs.gov.au/statistics/health/disability/disability-ageing-and-carers-australia-summary-findings/2018)  
+
+### households without internet access fraction  
+
+Type: Auxiliary  
+Formula: 1-households with internet access fraction  
+Units: Dmnl  
+Assumptions: 1 minus the fraction of those with internet access (from Telecommunications)  
+
+### income distribution by income cohort  
+
+Type: Auxiliary
+Formula: sum(income distribution fractions by income cohort and gender)  
+Units: Dmnl  
+Assumptions: This variable is split (subscripted) across 15 income cohorts (negative, nil, $1-$149, $150-$299, $300-$399, $400-$499, $500-$649, $650-$799, $800-$999, $1,000-$1,249, $1,250-$1,499, $1,250-$1,499, $1,750-$1,999, $2,000-$2,999, $3,000 or more) and summed over the two gender categories  
+
+### income distribution fractions by income cohort and gender  
+
+Type: Constant  
+Formula: [Negative; M,F] = 0.006, 0.0022  
+[Nil; M,F] = 0.0105, 0.009  
+["$1-$149"; M,F] = 0.0224, 0.0269  
+["$150-$299"; M,F] = 0.0284, 0.0396  
+["$300-$399"; M,F] = 0.0366, 0.0403  
+["$400-$499"; M,F] = 0.0448, 0.0612  
+["$500-$649"; M,F] = 0.0523, 0.0717  
+["$650-$799"; M,F] = 0.0605, 0.0695  
+["$800-$999"; M,F] = 0.0859, 0.0471  
+["$1,000-$1,249"; M,F] = 0.0799, 0.0381  
+["$1,250-$1,499"; M,F] = 0.0276, 0.0224  
+["$1,500-$1,749"; M,F] = 0.0246, 0.0261  
+["$1,750-$1,999"; M,F] = 0.0202, 0.003  
+["$2,000-$2,999"; M,F] = 0.0194, 0.0105  
+["$3,000 or more"; M,F] = 0.0112, 0.0075  
+Units: Dmnl  
+Assumptions: Data from 2016 census, for weekly income. Disaggregated by gender - ABS only uses male and female for gender so is not comprehensive. Formulas above list [male, female]. See Github for data.
+
+### inequality indicator  
+
+Type: Auxiliary  
+Formula: (disability fraction + households without internet access fraction + normalised intergenerational inequality youth at risk +normalised poverty line + normalised travel inequality + normalised unemployed
+ + normalised housing stress) / 7  
+Units: Dmnl  
+Assumptions: Arithmetic mean of normalised input variables  
+
+### intergenerational risk factor  
+
+Type: Constant  
+Formula: 1.8  
+Units: structure/people  
+Assumptions: @cobb-clarke_intergenerational_2017 estimate it is 1.8 times more likely for children of parents receiving long-term welfare to receive welfare themselves  
+
+### normalised housing stress
+
+Type: Auxiliary  
+Formula: (number of households under mortgage stress + number of households under rent stress) / Residential Housing  
+Units: Dmnl  
+Assumptions: Normalisation by number of residential households  
+
+### normalised intergenerational inequality youth at risk  
+
+Type: Auxiliary  
+Formula: number of young people at risk for intergenerational inequality / "0-14"  
+Units: Dmnl  
+Assumptions: Normalisation by 0-14 age cohort population  
+
+### normalised poverty line  
+
+Type: Auxiliary  
+Formula: sum of people below poverty line / total population  
+Units: Dmnl  
+Assumptions: Normalisation by total population  
+
+### normalised travel inequality
+
+Type: Auxiliary  
+Formula: 1- (bus frequency / bus frequency required for travel equity)  
+Units: Dmnl  
+Assumptions: Normalisation by bus frequency and subtract result from 1 to obtain inequality instead of equity.  
+
+### normalised unemployed  
+
+Type: Auxiliary  
+Formula: (number of unemployed people / total population) * normalised unemployed unit conversion  
+Units: Dmnl  
+Assumptions: normalisation by total population  
+
+### normalised unemployed unit conversion  
+
+Type: Auxiliary  
+Formula: 1  
+Units: Year*people/job  
+Assumptions: Unit conversion to force all input units to dimensionless  
+
+### number labour force in income bracket  
+
+Type: Auxiliary  
+Formula: INTEGER ( income distribution fractions by income cohort and gender * labour force)  
+Units: people  
+Assumptions: Summed over all income cohorts and genders  
+
+### number of unemployed people  
+
+Type: Auxiliary  
+Formula: "unemployment (agriculture)" + "unemployment (other)" + "unemployment (tourism)"  
+Units: job/Year  
+Assumptions: 
+
+### number of young people at risk for intergenerational inequality  
+
+Type: Auxiliary  
+Formula: intergenerational risk factor * "0-14" * (sum of people below poverty line / Residential Housing)  
+Units: people  
+Assumptions: Multiply risk factor by proportion of total households below poverty line by youth cohort  
+
+### number people below poverty line  
+
+Type: Auxiliary  
+Formula: number labour force in income bracket  
+Units: people  
+Assumptions: Poverty line is below first quartile ($0 - $399). This is in line with the ACOSS figure of $457 (@acoss_poverty_2020). Excludes income cohorts above $300-$399.  
+
+### sum of people below poverty line  
+
+Type: Auxiliary  
+Formula: sum ( number people below poverty line [poverty line ss!,Gender!] )  
+Units: people  
+Assumptions: Summed over income cohorts from Negative to $300-$399 and genders  
